@@ -5,8 +5,8 @@
 #' @param data Matrix containing data. Should be a statistical image, i.e., the
 #' test statistic of each grid cell
 #' @param thr Threshold of significance.
-#' @return A number specifying the size, in number of grid cells, of the largest
-#' exceedance cluster.
+#' @return A number, stcs, specifying the size, in number of grid cells, of the largest
+#' exceedance cluster and a matrix containing the detected clusters.
 #' @param data_dim dimesions of original data. Used for calculating df for
 #' t distributed test statistics, ignored if the test statistic is normal
 #' @export get_stcs
@@ -45,7 +45,43 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim){
   clusters_sep[[2]]<- c(clusters_pos$cluster.count, clusters_neg$cluster.count)
   names(clusters_sep)<- c("clusters", "cluster.count")
 
-  stcs<- max(clusters_sep$cluster.count)
+  stcs<- max(clusters_sep$cluster.count, na.rm = TRUE)
+  stcs_idx<- which(length(clusters_sep$cluster.count)==stcs)
+  stcs_cluster_results<- data[clusters_sep$clusters==stcs_idx]
+  stcs_maxT<- max(stcs_cluster_results, na.rm = TRUE)
 
-  return(list(stcs=stcs, clusters=clusters_sep))
+  # within cluster properties --- maxT works fine, all others are similar or worse
+  # stcs_mvt<- vector(length = length(clusters_sep$cluster.count), mode = "list")
+  # for (i in 1:length(clusters_sep$cluster.count)){
+  #   #stcs_mvt[[i]]<- vector(length = 11, mode = "list")
+  #   #print(i)
+  #
+  #   #get results for cluster i and save for later
+  #   cluster_results<- data[clusters_sep$clusters==i]
+  #   stcs_mvt[[i]]$results<- cluster_results
+  #
+  #   # maxT
+  #   stcs_mvt[[i]]$maxT<- max(cluster_results, na.rm = TRUE)
+  #
+  #   # avgT
+  #   stcs_mvt[[i]]$meanT<- mean(cluster_results, na.rm = TRUE)
+  #
+  #   # medianT
+  #   stcs_mvt[[i]]$medianT<- median(cluster_results, na.rm = TRUE)
+  #
+  #   # quantiles: 0.90, 0.95
+  #   stcs_mvt[[i]]$q90T<- unname(quantile(cluster_results, probs = 0.90, na.rm = TRUE))
+  #   stcs_mvt[[i]]$q95T<- unname(quantile(cluster_results, probs = 0.95, na.rm = TRUE))
+  #
+  #   # average of top: 3, 5, 10 grid cells
+  #   stcs_mvt[[i]]$meanTop3<- mean(head(sort(cluster_results, decreasing = TRUE), n=3), na.rm = TRUE)
+  #   stcs_mvt[[i]]$meanTop5<- mean(head(sort(cluster_results, decreasing = TRUE), n=5), na.rm = TRUE)
+  #   stcs_mvt[[i]]$meanTop10<- mean(head(sort(cluster_results, decreasing = TRUE), n=10), na.rm = TRUE)
+  #
+  #   # average of top: 5% 10%
+  #   stcs_mvt[[i]]$meanTop5percent<- mean(head(sort(cluster_results, decreasing = TRUE), n=length(cluster_results)*.05), na.rm = TRUE)
+  #   stcs_mvt[[i]]$meanTop10percent<- mean(head(sort(cluster_results, decreasing = TRUE), n=length(cluster_results)*.10), na.rm = TRUE)
+  # }
+
+  return(list(stcs=stcs, clusters=clusters_sep, stcs_maxT=stcs_maxT))
 }
