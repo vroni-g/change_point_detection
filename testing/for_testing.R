@@ -14,7 +14,7 @@ method="all"
 nperm=10
 alpha_local=0.05
 alpha_global=0.05
-null_distribution="normal"
+null_distribution="normal" # defines if threshold based on alpha level is drawn from normal or t distribution
 seed=NULL
 block_size=NULL
 verbose=TRUE
@@ -35,22 +35,25 @@ sen0 <- function(y,x){
 }
 
 
-data_detrend<- data %>% apply(1:2,
+data_detrend<- data %>% apply(1:2, # apply(1:2,...) will apply function to every cell
                               function(x)
     {
       (x- 1:length(x)*sen0(x))
     }
   )
 
-data_detrend<-  aperm(data_detrend, c(2,3,1))
+data_detrend<-  aperm(data_detrend, c(2,3,1)) # transpose it to put lat & long in the first dimensions again
+
+# perm_dist performs obtains the permutation distribution for maxT, STCS and others specified in the respective functions
 perm_results<- perm_dist(data=data_detrend, fx=fx, nperm=nperm, alpha_local=alpha_local,
                          alpha_global=alpha_global, null_distribution=null_distribution,
                          seed=seed, block_size=block_size, verbose=verbose)
+
 # test results for nperm=1000, detrended data
 # saveRDS(perm_results, file = "testing/detrended_temp_data_nperm_1000.rds")
 perm_results<- readRDS("testing/detrended_temp_data_nperm_1000.rds")
 str(perm_results)
-perm_results$stcs_maxT[!is.finite(perm_results$stcs_maxT)]<- 0
+perm_results$stcs_maxT[!is.finite(perm_results$stcs_maxT)] <- 0
 
 # bootstrap check to check false positive rate
 sim_length<- 1000
@@ -74,16 +77,20 @@ for(j in 1:sim_length){
     tmp_stcs_maxt<- perm_results$stcs_maxT[ind]
     tmp_stcs_maxt[!is.finite(tmp_stcs_maxt)]<- 0
 
+    # gets the threshold for the current sample
     q_thr_stcs<- quantile(tmp_stcs, probs = 1-alpha, names = FALSE)
     q_thr_maxt<- quantile(tmp_maxt, probs = 1-alpha, names = FALSE)
     q_thr_stcs_maxt<- quantile(tmp_stcs_maxt, probs = 1-alpha, names = FALSE)
 
+    # retrieve false positives, i.e. values bove current sample based threshold
     fpr_stcs[i]<- tmp_stcs[length(tmp_stcs)] > q_thr_stcs
     fpr_maxt[i]<- tmp_maxt[length(tmp_maxt)] > q_thr_maxt
 
     # naive bivariate
+    # (either STCS or maxT is significant but on 0.025 alpha each)
     fpr_bivariate[i]<- tmp_stcs[length(tmp_stcs)] > quantile(tmp_stcs, probs = 1-alpha/2, names = FALSE) | tmp_stcs_maxt[length(tmp_stcs_maxt)] > quantile(tmp_stcs_maxt, probs = 1-alpha/2, names = FALSE)
     # slightly too liberal - mean and median =.055
+
 
     # using bivariate empirical cdf
     # library(bivariate)
@@ -115,6 +122,8 @@ summary(fpr_sim_bivariate)
 # ACCURATE
 # bootstrap sample size of 100 gives same results as 300
 
+# following part is based on some previous trials and currently does not work
+#*******************
 # visualize results for multivariate threshold
 # NOTE: outdated df creation
 results_df<- do.call(rbind, perm_results$stcs_mvt[[1]]) %>% as.data.frame
@@ -122,6 +131,7 @@ results_df$results_length<- lapply(perm_results$stcs_mvt[[1]], function(x) x$res
 results_df$results<- NULL
 results_df$id<- 1
 
+nperm = 1000
 for(i in 2:nperm){
   tmp<- do.call(rbind, perm_results$stcs_mvt[[i]]) %>% as.data.frame
   tmp$results_length<- lapply(perm_results$stcs_mvt[[i]], function(x) x$results %>% length) %>% do.call(c, .)

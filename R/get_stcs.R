@@ -23,8 +23,8 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim){
   # positive
   pixel_result_pos<- pixel_result
   pixel_result_pos[is.na(pixel_result_pos)]<- -999
-  clusters_pos<- osc::cca(pixel_result_pos,count.cells = TRUE, s=1, mode = 2,
-                          count.max  = length(pixel_sign))
+  clusters_pos<- osc::cca(pixel_result_pos,count.cells = TRUE, s=1, mode = 2, # only values >0 are included in osc:cca
+                          count.max  = length(pixel_sign)) # this returns a matrix of size data that contains integers > 0 that are cluster ids
   stcs_pos<- max(clusters_pos$cluster.count)
 
   nclust_pos<- length(clusters_pos$cluster.count)
@@ -32,7 +32,7 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim){
 
   # negative
   pixel_result_neg<- pixel_result
-  pixel_result_neg[pixel_result_neg == -1] = 10
+  pixel_result_neg[pixel_result_neg == -1] = 10 # swap signs so that originally negative values will now be considered in osc:cca
   pixel_result_neg[pixel_result_neg == 1] = -10
   pixel_result_neg[is.na(pixel_result_neg)] = -999
   clusters_neg<- osc::cca(pixel_result_neg,count.cells = TRUE, s=1, mode = 2,
@@ -44,10 +44,15 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim){
   clusters_sep[[1]]<- clusters_pos$clusters + clusters_neg$clusters
   clusters_sep[[2]]<- c(clusters_pos$cluster.count, clusters_neg$cluster.count)
   names(clusters_sep)<- c("clusters", "cluster.count")
+  # clusters_sep is a matrix same size as data containing cluster ids (ints > 0) for cells of negative and positive clusters
 
   stcs<- max(clusters_sep$cluster.count, na.rm = TRUE)
-  stcs_idx<- which(length(clusters_sep$cluster.count)==stcs)
-  stcs_cluster_results<- data[clusters_sep$clusters==stcs_idx]
+  #stcs_idx<- which(length(clusters_sep$cluster.count)==stcs)
+  #!!!!!!!!!!!!!!
+  # shouldn't that be
+  stcs_idx<- which(clusters_sep$cluster.count==stcs)
+  #!!!!!!!!!!!!!!
+  stcs_cluster_results<- data[clusters_sep$clusters==stcs_idx] # retrieve all cells (by position in matrix?) that belong to the biggest cluster
   stcs_maxT<- max(stcs_cluster_results, na.rm = TRUE)
 
   # within cluster properties --- maxT works fine, all others are similar or worse
