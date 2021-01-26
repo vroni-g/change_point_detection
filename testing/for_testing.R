@@ -82,7 +82,7 @@ for(j in 1:sim_length){
     q_thr_maxt<- quantile(tmp_maxt, probs = 1-alpha, names = FALSE)
     q_thr_stcs_maxt<- quantile(tmp_stcs_maxt, probs = 1-alpha, names = FALSE)
 
-    # retrieve false positives, i.e. values bove current sample based threshold
+    # retrieve false positives, i.e. values above current sample based threshold
     fpr_stcs[i]<- tmp_stcs[length(tmp_stcs)] > q_thr_stcs
     fpr_maxt[i]<- tmp_maxt[length(tmp_maxt)] > q_thr_maxt
 
@@ -185,6 +185,7 @@ results_df %>%
 out<- threshold_data(perm_results=perm_results, alpha_local=alpha_local,
                      alpha_global=alpha_global, data_dim=dim(data),
                      null_distribution=null_distribution)
+
 
 
 ####### TEST WITH LAI DATA
