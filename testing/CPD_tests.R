@@ -1,7 +1,7 @@
 # simulation to check FPR of change point detection methods
 
 trend <- rep(sin(2*pi*c(0:11)/12),20) #+c(rep(0,12*10),rep(0.5,12*10))
-n <- 1000
+n <- 5000
 
 # BFAST ----
 #*********************************************************************
@@ -22,6 +22,8 @@ plot(d) # plot the last t.s. as an example
 #*********************************************************************
 library(strucchange)
 
+# Generalized fluctuation tests
+#************
 test_CPD_efp <- function(n, fun, trend, h = NULL){
   p <- c()
   for (i in 1:n) {
@@ -30,20 +32,23 @@ test_CPD_efp <- function(n, fun, trend, h = NULL){
     res <-  sctest(temp)
     p <- c(p, res$p.value)
   }
-  fpr <- sum(p<0.05)/n
+  fpr <- as.double(sum(p<0.05))/as.double(n)
   cat(paste('False positive rate for efp function ', fun,' is: ', fpr))
   return(p)
 }
 
 n <- 5000
+# residual based:
 rec_cusum <- test_CPD_efp(n, 'Rec-CUSUM', trend)
 ols_cusum <- test_CPD_efp(n, 'OLS-CUSUM', trend)
-rec_mosum <- test_CPD_efp(n, 'Rec-MOSUM', trend, h = 0.3)
+rec_mosum <- test_CPD_efp(n, 'Rec-MOSUM', trend, h = 0.3) # tried different window sizes from 0.01 to 0.3 but always FPR = 0
 ols_mosum <- test_CPD_efp(n, 'OLS-MOSUM', trend, h = 0.01)
+# estimates based:
 recur_estimates <- test_CPD_efp(n, 'RE', trend)
 mov_estimates <- test_CPD_efp(n, 'ME', trend, h = 0.05)
 
-
+# F Statistics (compares model fit for whole series vs. two segments; iterates over whole series as possible break points)
+#************
 test_CPD_fstat <- function(n){
   p_sup <- c()
   p_exp <- c()
@@ -70,39 +75,56 @@ fstat <- test_CPD_fstat(10000)
 
 
 # AMOC (changepoint package) ----
+# at most one change
 #*********************************************************************
 library(changepoint)
 
-test_CPD_amoc <- function(n, stat){
-  p <- c()
-  for (i in 1:n) {
-    d <- ts(rnorm(12*20,0,.2)+trend, frequency=12, start=c(2000,1))
-    temp <- cpt.mean(d, penalty = "Asymptotic", pen.value = 0.05, method = "AMOC",
+n <-10000
+
+fpr_mean <- c()
+for (i in 1:n) {
+  d <- ts(rnorm(12*20,0,.2)+trend, frequency=12, start=c(2000,1))
+  res <- cpt.mean(d, penalty = "Asymptotic", pen.value = 0.05, method = "AMOC",
                      test.stat = "Normal", class = FALSE)
-    p <- c(p, temp[2])
-  }
-  fpr <- sum(p<0.05)/n
-  cat(paste('False positive rate for AMOC ', stat,' is: ', fpr))
-  return(p)
+  # in documentation says that it results in NA if no changepoint but it always
+  # returns 240 as changepoint location which is the last point...
+  if (res[1] != 240) fpr_mean <- c(fpr_mean, res[1])
 }
-# something wrong here. I dont really know if its the p value of the changepoint or of the test for at most one CP
-norm_amoc <- test_CPD_amoc(10000,"Normal")
+cat(paste('False positive rate for AMOC mean is ', length(fpr_mean)/n))
 
-d <- ts(rnorm(12*20,0,.2)+trend, frequency=12, start=c(2000,1))
-temp <- cpt.mean(d, penalty = "Manual", pen.value = "null likelihood", method = "AMOC",
-                 test.stat = "Normal")
+fpr_var <- c()
+for (i in 1:n) {
+  d <- ts(rnorm(12*20,0,.2)+trend, frequency=12, start=c(2000,1))
+  res <- cpt.var(d, penalty = "Asymptotic", pen.value = 0.05, method = "AMOC",
+                  test.stat = "Normal", class = FALSE)
+  if (res[1] != 240) fpr_var <- c(fpr_var, res[1])
+}
+cat(paste('False positive rate for AMOC var is ', length(fpr_var)/n))
+# detects a handful of change points but only within the first and last two or three time points
 
+fpr_meanvar <- c()
+for (i in 1:n) {
+  d <- ts(rnorm(12*20,0,.2)+trend, frequency=12, start=c(2000,1))
+  res <- cpt.meanvar(d, penalty = "Asymptotic", pen.value = 0.05, method = "AMOC",
+                  test.stat = "Normal", class = FALSE)
+  if (res[1] != 240) fpr_meanvar <- c(fpr_meanvar, res[1])
+}
+cat(paste('False positive rate for AMOC meanvar is ', length(fpr_meanvar)/n))
+fpr_meanvar
+# always detects change points at the penultimate and second/third time points...
 
 
 # Pettitts (trend package) ----
 #*********************************************************************
+# non parametric pettitt test (also somehow based on wilcoxon rang thing)
 
 library(trend)
-trend <- rep(sin(2*pi*c(0:11)/12),40)
+#trend <- rep(sin(2*pi*c(0:11)/12),40) # larger time series (adjust the ts() command!)
+
 n <- 10000
 p <- c()
 for (i in 1:n) {
-  d <- ts(rnorm(12*40,0,.2)+trend, frequency=12, start=c(2000,1))
+  d <- ts(rnorm(12*20,0,.2)+trend, frequency=12, start=c(2000,1))
   res <- pettitt.test(d)
   p <- c(p, res$p.value)
 }
