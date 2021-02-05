@@ -20,7 +20,7 @@ block_size=NULL
 verbose=TRUE
 
 # FOR TESTING LOOP IN perm_dist.R
-i=1
+#i=1
 
 # get results
 # nperm = 100
@@ -45,15 +45,41 @@ data_detrend<- data %>% apply(1:2, # apply(1:2,...) will apply function to every
 data_detrend<-  aperm(data_detrend, c(2,3,1)) # transpose it to put lat & long in the first dimensions again
 
 # perm_dist performs obtains the permutation distribution for maxT, STCS and others specified in the respective functions
-perm_results<- perm_dist(data=data_detrend, fx=fx, nperm=nperm, alpha_local=alpha_local,
+# perm_results<- perm_dist(data=data_detrend, fx=fx, nperm=nperm, alpha_local=alpha_local,
+#                          alpha_global=alpha_global, null_distribution=null_distribution,
+#                          seed=seed, block_size=block_size, verbose=verbose)
+#*******************************************************************************
+# test new perm_dist
+#*******************************************************************************
+nperm = 20
+perm_results <- perm_dist(data=data_detrend, fx=fx, nperm=nperm, alpha_local=alpha_local,
                          alpha_global=alpha_global, null_distribution=null_distribution,
                          seed=seed, block_size=block_size, verbose=verbose)
+
+out<- list()
+tmp<- get_stcs(data=perm_results$original_results, alpha_local=alpha_local, null_distribution=null_distribution)
+
+stcs_thr<- quantile(perm_results$stcs, 1-alpha_global, na.rm = TRUE)
+wh_cluster<- which(tmp$clusters$cluster.count > stcs_thr)
+wh_cluster_sel<- tmp$clusters$clusters %in% wh_cluster
+out$stcs<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster) x %in% wh_cluster, wh_cluster)
+
+# combining function of stcs and stcs_maxT_all
+wt_thr <- quantile(perm_results$wt, 1-alpha_global, na.rm = TRUE)
+wh_cluster_wt <- which(perm_results$original_wt > wt_thr)
+out$Wt<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster_wt) x %in% wh_cluster_wt, wh_cluster_wt)
+
+
+
+
+#*******************************************************************************
 
 # test results for nperm=1000, detrended data
 # saveRDS(perm_results, file = "testing/detrended_temp_data_nperm_1000.rds")
 perm_results<- readRDS("testing/detrended_temp_data_nperm_1000.rds")
 str(perm_results)
 perm_results$stcs_maxT[!is.finite(perm_results$stcs_maxT)] <- 0
+
 
 # bootstrap check to check false positive rate
 sim_length<- 1000
@@ -88,7 +114,9 @@ for(j in 1:sim_length){
 
     # naive bivariate
     # (either STCS or maxT is significant but on 0.025 alpha each)
-    fpr_bivariate[i]<- tmp_stcs[length(tmp_stcs)] > quantile(tmp_stcs, probs = 1-alpha/2, names = FALSE) | tmp_stcs_maxt[length(tmp_stcs_maxt)] > quantile(tmp_stcs_maxt, probs = 1-alpha/2, names = FALSE)
+    #fpr_bivariate[i]<- tmp_stcs[length(tmp_stcs)] > quantile(tmp_stcs, probs = 1-alpha/2, names = FALSE) | tmp_stcs_maxt[length(tmp_stcs_maxt)] > quantile(tmp_stcs_maxt, probs = 1-alpha/2, names = FALSE)
+
+    fpr_bivariate[i]<- tmp_stcs[length(tmp_stcs)] > quantile(tmp_stcs, probs = 1-alpha/2, names = FALSE) | tmp_maxt[length(tmp_maxt)] > quantile(tmp_maxt, probs = 1-alpha/2, names = FALSE)
     # slightly too liberal - mean and median =.055
 
 
@@ -126,65 +154,65 @@ summary(fpr_sim_bivariate)
 #*******************
 # visualize results for multivariate threshold
 # NOTE: outdated df creation
-results_df<- do.call(rbind, perm_results$stcs_mvt[[1]]) %>% as.data.frame
-results_df$results_length<- lapply(perm_results$stcs_mvt[[1]], function(x) x$results %>% length) %>% do.call(c, .)
-results_df$results<- NULL
-results_df$id<- 1
-
-nperm = 1000
-for(i in 2:nperm){
-  tmp<- do.call(rbind, perm_results$stcs_mvt[[i]]) %>% as.data.frame
-  tmp$results_length<- lapply(perm_results$stcs_mvt[[i]], function(x) x$results %>% length) %>% do.call(c, .)
-  tmp$results<- NULL
-  tmp$id<- i
-  results_df<- rbind(results_df, tmp)
-}
-results_df<- unnest(results_df)
-
-library(ggalt)
-
-# all cluster results
-results_encircle<- results_df %>% filter(id==3)
-results_df %>%
-  ggplot(aes(x = results_length, y = abs(maxT), color = (id-25))) +
-  geom_point() +
-  #xlim(c(-1000,12000)) +
-  #ylim(c(-1, 8)) +
-  scale_fill_distiller(palette='Spectral') +
-  geom_point(aes(x = results_length, y = abs(maxT)),
-                data = results_encircle,
-                color = "red",
-                size = 2)+
-  geom_encircle(aes(x = results_length, y = abs(maxT)),
-             data = results_encircle,
-             color = "red",
-             size = 2,
-             expand = .01) +
-  theme_bw()
-
-# filtered by maximum
-results_df %>%
-  group_by(id) %>%
-  filter(results_length==max(results_length)) %>%
-  ggplot(aes(x = results_length, y = abs(maxT), color = (id-25))) +
-  geom_point() +
-  # xlim(c(0,1000)) +
-  scale_fill_distiller(palette='Spectral') +
-  geom_point(aes(x = results_length, y = abs(maxT)),
-             data = results_encircle %>% filter(results_length==max(results_length)) ,
-             color = "red",
-             size = 2)+
-  geom_encircle(aes(x = results_length, y = abs(maxT)),
-                data = results_encircle %>% filter(results_length==max(results_length)),
-                color = "red",
-                size = 2,
-                expand = .08) +
-  theme_bw()
-
-# threshold results
-out<- threshold_data(perm_results=perm_results, alpha_local=alpha_local,
-                     alpha_global=alpha_global, data_dim=dim(data),
-                     null_distribution=null_distribution)
+# results_df<- do.call(rbind, perm_results$stcs_mvt[[1]]) %>% as.data.frame
+# results_df$results_length<- lapply(perm_results$stcs_mvt[[1]], function(x) x$results %>% length) %>% do.call(c, .)
+# results_df$results<- NULL
+# results_df$id<- 1
+#
+# nperm = 1000
+# for(i in 2:nperm){
+#   tmp<- do.call(rbind, perm_results$stcs_mvt[[i]]) %>% as.data.frame
+#   tmp$results_length<- lapply(perm_results$stcs_mvt[[i]], function(x) x$results %>% length) %>% do.call(c, .)
+#   tmp$results<- NULL
+#   tmp$id<- i
+#   results_df<- rbind(results_df, tmp)
+# }
+# results_df<- unnest(results_df)
+#
+# library(ggalt)
+#
+# # all cluster results
+# results_encircle<- results_df %>% filter(id==3)
+# results_df %>%
+#   ggplot(aes(x = results_length, y = abs(maxT), color = (id-25))) +
+#   geom_point() +
+#   #xlim(c(-1000,12000)) +
+#   #ylim(c(-1, 8)) +
+#   scale_fill_distiller(palette='Spectral') +
+#   geom_point(aes(x = results_length, y = abs(maxT)),
+#                 data = results_encircle,
+#                 color = "red",
+#                 size = 2)+
+#   geom_encircle(aes(x = results_length, y = abs(maxT)),
+#              data = results_encircle,
+#              color = "red",
+#              size = 2,
+#              expand = .01) +
+#   theme_bw()
+#
+# # filtered by maximum
+# results_df %>%
+#   group_by(id) %>%
+#   filter(results_length==max(results_length)) %>%
+#   ggplot(aes(x = results_length, y = abs(maxT), color = (id-25))) +
+#   geom_point() +
+#   # xlim(c(0,1000)) +
+#   scale_fill_distiller(palette='Spectral') +
+#   geom_point(aes(x = results_length, y = abs(maxT)),
+#              data = results_encircle %>% filter(results_length==max(results_length)) ,
+#              color = "red",
+#              size = 2)+
+#   geom_encircle(aes(x = results_length, y = abs(maxT)),
+#                 data = results_encircle %>% filter(results_length==max(results_length)),
+#                 color = "red",
+#                 size = 2,
+#                 expand = .08) +
+#   theme_bw()
+#
+# # threshold results
+# out<- threshold_data(perm_results=perm_results, alpha_local=alpha_local,
+#                      alpha_global=alpha_global, data_dim=dim(data),
+#                      null_distribution=null_distribution)
 
 
 

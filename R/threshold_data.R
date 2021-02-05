@@ -53,6 +53,10 @@ threshold_data<- function(perm_results, alpha_local, alpha_global, data_dim,
   wh_cluster_sel<- tmp$clusters$clusters %in% c(wh_cluster_stcs, wh_cluster_stcs_maxT)
   out$stcs_maxT<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster)  x %in% wh_cluster, wh_cluster=unique(c(wh_cluster_stcs, wh_cluster_stcs_maxT)))
 
+  # combining function of stcs and stcs_maxT_all
+  wt_thr <- quantile(perm_results$wt, 1-alpha_global, na.rm = TRUE)
+  wh_cluster_wt <- which(perm_results$original_wt > wt_thr)
+  out$Wt<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster_wt) x %in% wh_cluster_wt, wh_cluster_wt)
 
   data_dimnames<- attr(out$test_statistic, "dimnames")
   if(!is.null(data_dimnames)) {

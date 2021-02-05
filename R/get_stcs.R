@@ -47,46 +47,19 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim){
   # clusters_sep is a matrix same size as data containing cluster ids (ints > 0) for cells of negative and positive clusters
 
   stcs<- max(clusters_sep$cluster.count, na.rm = TRUE)
-  #stcs_idx<- which(length(clusters_sep$cluster.count)==stcs)
-  #!!!!!!!!!!!!!!
-  # shouldn't that be
   stcs_idx<- which(clusters_sep$cluster.count==stcs)
-  #!!!!!!!!!!!!!!
   stcs_cluster_results<- data[clusters_sep$clusters==stcs_idx] # retrieve all cells (by position in matrix?) that belong to the biggest cluster
   stcs_maxT<- max(stcs_cluster_results, na.rm = TRUE)
 
-  # within cluster properties --- maxT works fine, all others are similar or worse
-  # stcs_mvt<- vector(length = length(clusters_sep$cluster.count), mode = "list")
-  # for (i in 1:length(clusters_sep$cluster.count)){
-  #   #stcs_mvt[[i]]<- vector(length = 11, mode = "list")
-  #   #print(i)
-  #
-  #   #get results for cluster i and save for later
-  #   cluster_results<- data[clusters_sep$clusters==i]
-  #   stcs_mvt[[i]]$results<- cluster_results
-  #
-  #   # maxT
-  #   stcs_mvt[[i]]$maxT<- max(cluster_results, na.rm = TRUE)
-  #
-  #   # avgT
-  #   stcs_mvt[[i]]$meanT<- mean(cluster_results, na.rm = TRUE)
-  #
-  #   # medianT
-  #   stcs_mvt[[i]]$medianT<- median(cluster_results, na.rm = TRUE)
-  #
-  #   # quantiles: 0.90, 0.95
-  #   stcs_mvt[[i]]$q90T<- unname(quantile(cluster_results, probs = 0.90, na.rm = TRUE))
-  #   stcs_mvt[[i]]$q95T<- unname(quantile(cluster_results, probs = 0.95, na.rm = TRUE))
-  #
-  #   # average of top: 3, 5, 10 grid cells
-  #   stcs_mvt[[i]]$meanTop3<- mean(head(sort(cluster_results, decreasing = TRUE), n=3), na.rm = TRUE)
-  #   stcs_mvt[[i]]$meanTop5<- mean(head(sort(cluster_results, decreasing = TRUE), n=5), na.rm = TRUE)
-  #   stcs_mvt[[i]]$meanTop10<- mean(head(sort(cluster_results, decreasing = TRUE), n=10), na.rm = TRUE)
-  #
-  #   # average of top: 5% 10%
-  #   stcs_mvt[[i]]$meanTop5percent<- mean(head(sort(cluster_results, decreasing = TRUE), n=length(cluster_results)*.05), na.rm = TRUE)
-  #   stcs_mvt[[i]]$meanTop10percent<- mean(head(sort(cluster_results, decreasing = TRUE), n=length(cluster_results)*.10), na.rm = TRUE)
-  # }
+  allcluster_max <- c()
+  clusters_sep$cluster.max <- vector(length = length(clusters_pos$cluster.count))
+  for (i in 1:length(clusters_sep$cluster.count)){ # retrieve maximum of each cluster
+    clust_max <- data[clusters_sep$clusters==i] %>%
+      max(.,na.rm = TRUE)
+    clusters_sep$cluster.max[i] <- clust_max # assign each cluster its maximum
+    allcluster_max <- c(allcluster_max, clust_max)
+  }
+  stcs_maxT_all <- max(allcluster_max, na.rm = TRUE) # get maximum of all cluster maxima
 
-  return(list(stcs=stcs, clusters=clusters_sep, stcs_maxT=stcs_maxT))
+  return(list(stcs=stcs, clusters=clusters_sep, stcs_maxT_all=stcs_maxT_all, stcs_maxT = stcs_maxT))
 }
