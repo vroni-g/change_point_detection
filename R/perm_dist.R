@@ -24,10 +24,9 @@ perm_dist<- function(data, fx, nperm=1000,
   perm_matrix<- perm_matrix(nobs = dim(data)[3], nperm = nperm, block_size = block_size, seed = seed)
   #**************testing only**********************
   # remove last/original one to see if it works for a permutation which has clusters by chance
-  nperm <- nperm - 1
-  perm_matrix <- perm_matrix[1:nperm, 1:dim(perm_matrix)[2]]
+  # nperm <- nperm - 1
+  # perm_matrix <- perm_matrix[1:nperm, 1:dim(perm_matrix)[2]]
   #**************testing only**********************
-  perm_matrix
 
   maxT<- vector(length = nperm)
   stcs<- vector(length = nperm)
