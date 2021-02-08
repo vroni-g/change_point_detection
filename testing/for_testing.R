@@ -51,17 +51,20 @@ data_detrend<-  aperm(data_detrend, c(2,3,1)) # transpose it to put lat & long i
 #*******************************************************************************
 # test new perm_dist
 #*******************************************************************************
-nperm = 20
-perm_results <- perm_dist(data=data_detrend, fx=fx, nperm=nperm, alpha_local=alpha_local,
-                         alpha_global=alpha_global, null_distribution=null_distribution,
-                         seed=seed, block_size=block_size, verbose=verbose)
+nperm = 30
+# perm_results <- perm_dist(data=data_detrend, fx=fx, nperm=nperm, alpha_local=alpha_local,
+#                          alpha_global=alpha_global, null_distribution=null_distribution,
+#                          seed=seed, block_size=block_size, verbose=verbose)
+perm_results <- perm_dist(data=data, fx=fx, nperm=nperm, alpha_local=alpha_local,
+                          alpha_global=alpha_global, null_distribution=null_distribution,
+                          seed=seed, block_size=block_size, verbose=verbose)
 
 out<- list()
 tmp<- get_stcs(data=perm_results$original_results, alpha_local=alpha_local, null_distribution=null_distribution)
 
 stcs_thr<- quantile(perm_results$stcs, 1-alpha_global, na.rm = TRUE)
 wh_cluster<- which(tmp$clusters$cluster.count > stcs_thr)
-wh_cluster_sel<- tmp$clusters$clusters %in% wh_cluster
+#wh_cluster_sel<- tmp$clusters$clusters %in% wh_cluster
 out$stcs<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster) x %in% wh_cluster, wh_cluster)
 
 # combining function of stcs and stcs_maxT_all
