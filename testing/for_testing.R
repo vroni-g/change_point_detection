@@ -44,7 +44,7 @@ data_detrend<- data %>% apply(1:2, # apply(1:2,...) will apply function to every
 
 data_detrend<-  aperm(data_detrend, c(2,3,1)) # transpose it to put lat & long in the first dimensions again
 
-# perm_dist performs obtains the permutation distribution for maxT, STCS and others specified in the respective functions
+# perm_dist obtains the permutation distribution for maxT, STCS and others specified in the respective functions
 # perm_results<- perm_dist(data=data_detrend, fx=fx, nperm=nperm, alpha_local=alpha_local,
 #                          alpha_global=alpha_global, null_distribution=null_distribution,
 #                          seed=seed, block_size=block_size, verbose=verbose)
@@ -72,7 +72,19 @@ wt_thr <- quantile(perm_results$wt, 1-alpha_global, na.rm = TRUE)
 wh_cluster_wt <- which(perm_results$original_wt > wt_thr)
 out$Wt<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster_wt) x %in% wh_cluster_wt, wh_cluster_wt)
 
-
+dis_maxT_all <- ecdf(perm_results$stcs_maxT_all)
+dis_stcs<- ecdf(perm_results$stcs)
+clust_perm <- tmp
+wt <- vector(length = length(clust_perm$clusters$cluster.count))
+#for(j in 1:length(clust_perm$clusters$cluster.count)){
+    # retrieve p-values for each cluster
+  j <- 4
+  p_maxT_all <- 1 - dis_maxT_all(clust_perm$clusters$cluster.max[j])
+  p_stcs <- 1 - dis_stcs(clust_perm$clusters$cluster.count[j])
+  # combine in new test statistic
+  w <- 1 - min(log(p_maxT_all), log(p_stcs))
+  wt[j] <- w
+#}
 
 
 #*******************************************************************************
