@@ -49,12 +49,12 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim){
   stcs<- max(clusters_sep$cluster.count, na.rm = TRUE)
   stcs_idx<- which(clusters_sep$cluster.count==stcs)
   stcs_cluster_results<- data[clusters_sep$clusters==stcs_idx] # retrieve all cells (by position in matrix?) that belong to the biggest cluster
-  stcs_maxT<- max(stcs_cluster_results, na.rm = TRUE)
+  stcs_maxT<- max(abs(stcs_cluster_results), na.rm = TRUE)
 
   allcluster_max <- c()
   clusters_sep$cluster.max <- vector(length = length(clusters_pos$cluster.count))
   for (i in 1:length(clusters_sep$cluster.count)){ # retrieve maximum of each cluster
-    clust_max <- data[clusters_sep$clusters==i] %>%
+    clust_max <- data[clusters_sep$clusters==i] %>% abs %>%
       max(.,na.rm = TRUE)
     clusters_sep$cluster.max[i] <- clust_max # assign each cluster its maximum
     allcluster_max <- c(allcluster_max, clust_max)
