@@ -17,6 +17,7 @@
 #' calls
 #' @return returns the distribution of maxT, stcs, and stcs_mvt, each a vector in a list
 #' @export perm_dist
+#'
 
 perm_dist_SLURM<- function(data, fx, nperm=1000,
                      alpha_local, alpha_global, null_distribution,
@@ -28,18 +29,21 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
   stcs_maxT_all <- vector(length = nperm)
   perm_results <- vector(length = nperm, mode = 'list') # save all cluster results to derive p-values for cluster
   cat("starting permutations:\n")
+
   tmp_fn<- function(i, perm_matrix, fx, data){
     library(devtools)
+    #library(tidyverse)
+    library(magrittr)
     load_all()
     tmp<- apply(data[,,perm_matrix[i,]], 1:2, fx)
     maxT<- max(abs(as.vector(tmp)), na.rm = TRUE)
     tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution)
-    perm_results[i] <- list(tmp_stcs$clusters)
-    stcs[i]<- tmp_stcs$stcs
-    stcs_maxT[i]<- tmp_stcs$stcs_maxT
-    stcs_maxT_all[i] <- tmp_stcs$stcs_maxT_all
-    if(verbose) if((i%%10)==0) cat(i,"\n")
-    return(list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, stcs_maxT_all=stcs_maxT_all)), perm_results)
+    clust_results <- list(tmp_stcs$clusters)
+    stcs<- tmp_stcs$stcs
+    stcs_maxT<- tmp_stcs$stcs_maxT
+    stcs_maxT_all <- tmp_stcs$stcs_maxT_all
+    #if(verbose) if((i%%10)==0) cat(i,"\n")
+    return(list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, stcs_maxT_all=stcs_maxT_all), clust_results))
   }
 
   library(clustermq)
@@ -58,11 +62,13 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
                               n_cpus = 1),
               fail_on_error = FALSE,
               verbose = TRUE)
-
+  #return(results)
+  #results <- readRDS("detrended_temp_data_Wtadjust_nperm_10.rds")
+  library(magrittr)
   q_results <- lapply(results, function(x) x[[1]]) %>%
     do.call(rbind, .)
   # extract all perm_results and combine in list
-  perm_results <- lapply(results, function(x) x[[2]])
+  perm_results <- sapply(results, function(x) x[[2]])
 
   # get empirical distribution of maxT_all and stcs
   dis_maxT_all <- ecdf(q_results[,4])
@@ -75,8 +81,10 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
     #cat("Number of cluster: ", length(clust_perm$cluster.count))
     for(j in 1:length(clust_perm$cluster.count)){
       # retrieve p-values for each cluster
-      p_maxT_all <- 1 - dis_maxT_all(clust_perm$cluster.max[j]) - 1/nperm
-      p_stcs <- 1 - dis_stcs(clust_perm$cluster.count[j]) - 1/nperm
+      p_maxT_all <- 1 - dis_maxT_all(clust_perm$cluster.max[j])
+      if(p_maxT_all==0) p_maxT_all <- 0.000001
+      p_stcs <- 1 - dis_stcs(clust_perm$cluster.count[j])
+      if(p_stcs==0) p_stcs <- 0.000001
       # combine in new test statistic
       w <- 1 - min(log(p_maxT_all), log(p_stcs)) # if p-values are zero this will produce infinte/invalid results and assign 0...
       if (is.finite(w)){
@@ -90,5 +98,6 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
   }
 
   cat("finished!\n\n")
-  return(list(maxT = results[,1], stcs = results[,2], stcs_maxT = results[,3], wt = wt, original_wt = w_tmp))
+  return(list(maxT = q_results[,1], stcs = q_results[,2], stcs_maxT = q_results[,3], wt = wt, original_wt = w_tmp))
 }
+
