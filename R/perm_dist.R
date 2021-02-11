@@ -58,8 +58,10 @@ perm_dist<- function(data, fx, nperm=1000,
     #cat("Number of cluster: ", length(clust_perm$cluster.count))
     for(j in 1:length(clust_perm$cluster.count)){
       # retrieve p-values for each cluster
-      p_maxT_all <- 1 - dis_maxT_all(clust_perm$cluster.max[j]) - 1/nperm
-      p_stcs <- 1 - dis_stcs(clust_perm$cluster.count[j]) - 1/nperm
+      p_maxT_all <- 1 - dis_maxT_all(clust_perm$cluster.max[j]) + 1/nperm
+      if(p_maxT_all<=0) p_maxT_all <- 0.000001
+      p_stcs <- 1 - dis_stcs(clust_perm$cluster.count[j]) + 1/nperm
+      if(p_stcs<=0) p_stcs <- 0.000001
       # combine in new test statistic
       w <- 1 - min(log(p_maxT_all), log(p_stcs)) # if p-values are zero this will produce infinte/invalid results and assign 0...
       if (is.finite(w)){

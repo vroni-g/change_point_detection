@@ -30,7 +30,7 @@ statistic}
 calls}
 }
 \value{
-returns the distribution of maxT and stcs, each a vector in a list
+returns the distribution of maxT, stcs, and stcs_mvt, each a vector in a list
 }
 \description{
 Obtains the permutation distribution of the maximum statistic and the STCS,
