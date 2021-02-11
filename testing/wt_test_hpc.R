@@ -1,17 +1,18 @@
 # script to send perm_dist to cluster
-library("devtools")
-load_all()
-source("perm_dist_SLURM.R")
+suppressMessages(library(devtools))
+suppressMessages(library(tidyverse))
+devtools::load_all()
+source("testing/perm_dist_SLURM.R")
 
 data=temp_gistemp
 fx=sample_mk_function
 alpha_local=0.05
 alpha_global=0.05
-null_distribution="normal"
+null_distribution <- "normal"
 seed=NULL
 block_size=NULL
 verbose=TRUE
-nperm = 100
+nperm = 1000
 
 sen0 <- function(y,x){
   zyp.slopediff <- function(i, xx, yy, n) (yy[1:(n - i)] - yy[(i + 1):n])/(xx[1:(n - i)] - xx[(i + 1):n])
@@ -34,6 +35,6 @@ data=data_detrend
 
 res <- perm_dist_SLURM(data=data, fx=fx, nperm=nperm, alpha_local=alpha_local,
                        alpha_global=alpha_global, null_distribution=null_distribution,
-                       seed=seed, block_size=block_size, verbose=verbose)
-filename <- paste("detrended_temp_data_Wtadjust_nperm_", nperm, ".rds")
+                       seed=NULL, block_size=NULL, verbose=TRUE)
+filename <- paste0("testing/detrended_temp_data_Wtadjust_nperm_", nperm, ".rds")
 saveRDS(res, file = filename)
