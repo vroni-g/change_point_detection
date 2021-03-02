@@ -193,38 +193,41 @@ summary(fpr_sim_bivariate)
 
 ####### TEST WITH LAI DATA
 
-load("/home/jose/LAI/data/CHEN_RANGA/AVHRR/yearly_mean/lai_data.RData")
+#load("/home/jose/LAI/data/CHEN_RANGA/AVHRR/yearly_mean/lai_data.RData")
 
 # thresholds for perm distributions
 
 #need to reformat data
-tibble_list_to_3d_array<- function(data){
-  library(raster)
-  out<- matrix(NA, ncol = data$lat %>% unique %>% length, nrow = data$lon %>% unique %>% length)
-  data_long<- data %>% dplyr::select(data) %>% ungroup %>% unnest(cols = data)
-  n_years<- data_long$t %>% unique %>% length
-  data_list<- vector(mode = "list", length = unique(data_long$t) %>% length)
-  i<- 1
-  for(year in unique(data_long$t)){
-    data_raster<- data_long %>% filter(t==year) %>% rename(x = lon, y = lat) %>%
-      dplyr::select(x, y, lai) %>% rasterFromXYZ(crs = CRS("+init=epsg:4326"))
-    data_list[[i]]<- data_raster$lai %>% as.matrix
-    i<- i+1
-  }
-  data_array<- array(NA, dim= c(dim(data_list[[1]]), length(data_list)))
-  for(i in 1:n_years) data_array[,,i]<- data_list[[i]]
-  return(data_array)
-}
+# tibble_list_to_3d_array<- function(data){
+#   library(raster)
+#   out<- matrix(NA, ncol = data$lat %>% unique %>% length, nrow = data$lon %>% unique %>% length)
+#   data_long<- data %>% dplyr::select(data) %>% ungroup %>% unnest(cols = data)
+#   n_years<- data_long$t %>% unique %>% length
+#   data_list<- vector(mode = "list", length = unique(data_long$t) %>% length)
+#   i<- 1
+#   for(year in unique(data_long$t)){
+#     data_raster<- data_long %>% filter(t==year) %>% rename(x = lon, y = lat) %>%
+#       dplyr::select(x, y, lai) %>% rasterFromXYZ(crs = CRS("+init=epsg:4326"))
+#     data_list[[i]]<- data_raster$lai %>% as.matrix
+#     i<- i+1
+#   }
+#   data_array<- array(NA, dim= c(dim(data_list[[1]]), length(data_list)))
+#   for(i in 1:n_years) data_array[,,i]<- data_list[[i]]
+#   return(data_array)
+# }
+#
+# data_lai<- tibble_list_to_3d_array(data)
+# rm(data)
+#
+# data_lai_res<- perm_dist(data=data_lai, fx=fx, nperm=100, alpha_local=alpha_local,
+#           alpha_global=alpha_global, null_distribution=null_distribution,
+#           seed=seed, block_size=block_size, verbose=verbose)
+# rm(data)
+# saveRDS(data_lai_res, file = "testing/lai_res_nperm_1000.rds")
+nperm <- 100
 
-data_lai<- tibble_list_to_3d_array(data)
-rm(data)
-
-data_lai_res<- perm_dist(data=data_lai, fx=fx, nperm=100, alpha_local=alpha_local,
-          alpha_global=alpha_global, null_distribution=null_distribution,
-          seed=seed, block_size=block_size, verbose=verbose)
-rm(data)
-saveRDS(data_lai_res, file = "testing/lai_res_nperm_1000.rds")
-
+data_lai_res <- readRDS("testing/lai_res_nperm_100.rds")
+#data_lai_res <- readRDS("testing/LAI_Wtadjust_nperm_100.rds")
 
 
 results_df<- do.call(rbind, data_lai_res$stcs_mvt[[1]]) %>% as.data.frame
@@ -244,7 +247,7 @@ results_df<- unnest(results_df)
 library(ggalt)
 
 # all cluster results
-results_encircle<- results_df %>% filter(id==nperm)
+results_encircle<- results_df %>% filter(id==nperm) # retrieve original data
 results_encircle %>% filter(abs(maxT) >= quantile(abs(data_lai_res$maxT), probs = .975) | results_length >= quantile(results_length, probs=.975))
 
 results_df %>%

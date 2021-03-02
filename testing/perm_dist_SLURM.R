@@ -97,6 +97,7 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
   }
 
   cat("finished!\n\n")
-  return(list(maxT = q_results[,1], stcs = q_results[,2], stcs_maxT = q_results[,3], wt = wt, original_wt = w_tmp))
+  return(list(maxT = q_results[,1], stcs = q_results[,2], stcs_maxT = q_results[,3], wt = wt, original_wt = w_tmp,
+              original_data = clust_perm))
 }
 
