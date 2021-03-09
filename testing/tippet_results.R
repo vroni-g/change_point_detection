@@ -61,16 +61,21 @@ summary(fpr_sim_wt)
 #************************************************************
 # Check clustersizes of significant clusters with LAI data
 #************************************************************
-orig <- readRDS("testing/LAI_Wtadjust_nperm_2.rds")
+#orig <- readRDS("testing/LAI_Wtadjust_nperm_2.rds")
 # in former code the number and sizes of cluster of original data were not returned
 # changed this and executed again with only 2 permutations to retrieve cluster sizes
-res <- readRDS("testing/LAI_Wtadjust_nperm_100.rds")
+#res <- readRDS("testing/LAI_Wtadjust_nperm_100.rds")
+# clust_size <- orig$original_data$cluster.count
+# wt_vals <- res$original_wt
+# res_df <- data.frame(clust_size,wt_vals)
+# names(res_df) <- c("cluster_size","wt_values")
 
-clust_size <- orig$original_data$cluster.count
+res <- readRDS("testing/LAI_Wtadjust_nperm_1000.rds")
+clust_size <- res$original_data$cluster.count
 wt_vals <- res$original_wt
-
 res_df <- data.frame(clust_size,wt_vals)
 names(res_df) <- c("cluster_size","wt_values")
+
 
 # values declared significant by tippet
 tipp_95 <- res_df %>%
@@ -93,21 +98,31 @@ tip_small_975 <- res_df %>%
 
 res_df %>%
   ggplot(aes(x = cluster_size, y = wt_vals)) +
-  labs(title = "Suprathreshold Cluster of Mann Kendall's Trend Test (alpha = 0.05)") +
+  labs(title = "Suprathreshold Cluster of Mann Kendall's Trend Test (alpha = 0.05)",
+       caption = "Based on MK-Trend Test statistic of annual mean LAI values (1981-2019) of the NOAA dataset.
+       1000 permutations were performed to derive maximum statistic thresholds.") +
   xlab('Suprathreshold Cluster Size') +
   ylab('Tippet combining function value') +
-  geom_point(color = "steelblue3", size = 2, alpha = 0.6) +
+  geom_point(color = "steelblue3", size = 2, alpha = 0.7) +
   theme_bw() +
   geom_hline(yintercept = quantile(res$wt, probs = .95),col = "red") +
   geom_hline(yintercept = quantile(res$wt, probs = .975), col = "goldenrod1") +
   geom_vline(aes(xintercept = quantile(res$stcs, probs = .95), colour = "alpha = 0.05")) +
   geom_vline(aes(xintercept = quantile(res$stcs, probs = .975), colour = "alpha = 0.025")) +
-  scale_colour_manual("MaxDistribution Threshold",
-                      values = c("alpha = 0.05"="red", "alpha = 0.025"="goldenrod1")
-  ) +
-  geom_rect(mapping = aes(xmin=22500, xmax=42000, ymin=0.8, ymax=2), fill = NA, color = "black", show.legend = FALSE) +
-  annotate("text", x=32000, y=1.79, label= "For maxDistribution alpha = 0.05:", size = 3, fontface = "bold") +
-  annotate("text", x=32000, y=1.59, label= paste0("Significant Cluster STCS: ", nrow(stcs_95) ), size = 3) +
-  annotate("text", x=32000, y=1.44, label= paste0("Significant Cluster Tippet: ", nrow(tipp_95)), size = 3) +
-  annotate("text", x=32000, y=1.29, label= paste0("Significant Cluster Tippet but not STCS: ", nrow(tip_small_95)), size = 3) +
-  annotate("text", x=32000, y=1.09, label= paste0("Total number of Cluster: ", nrow(res_df)), size = 3)
+  scale_colour_manual("Maximum Statistic Thresholds",
+                      values = c("alpha = 0.05"="red", "alpha = 0.025"="goldenrod1")) +
+  theme(plot.caption = element_text(size = 7, face = "italic"),
+        legend.title=element_text(size=10),
+        legend.position = c(0.78, 0.85),
+        legend.background = element_rect(fill = NA)) +
+  geom_rect(mapping = aes(xmin=17000, xmax=38000, ymin=1, ymax=3.2), fill = "white", show.legend = FALSE) +
+  annotate("text", x=27000, y=2.95, label= "For Maximum Statistic Distribution alpha = 0.05 :", size = 3.5, fontface = "bold")+
+  annotate("text", x=21000, y=2.2, label= paste0("Significant Cluster STCS:  ", nrow(stcs_95),
+                                                 "\nSignificant Cluster Tippet:  ", nrow(tipp_95),
+                                                 "\nSignificant Cluster Tippet but not STCS: ", nrow(tip_small_95)), size = 3.5, hjust = 0) +
+  annotate("text", x=21000, y=1.4, label= paste0("Total number of Cluster: ", nrow(res_df)), size = 3.5, hjust = 0, fontface = "italic")
+
+ggsave("tippet_stcs.png", dpi= 300)
+
+
+

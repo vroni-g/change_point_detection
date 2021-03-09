@@ -11,7 +11,7 @@ null_distribution <- "normal"
 seed=NULL
 block_size=NULL
 verbose=TRUE
-nperm = 2
+nperm = 1000
 
 #**************************************
 # LAI Data
@@ -44,5 +44,5 @@ rm(data)
 res <- perm_dist_SLURM(data=data_lai, fx=fx, nperm=nperm, alpha_local=alpha_local,
                        alpha_global=alpha_global, null_distribution=null_distribution,
                        seed=NULL, block_size=NULL, verbose=TRUE)
-filename <- paste0("testing/LAI_Wtadjust_nperm_", nperm, ".rds")
+filename <- paste0("testing/LAI_tippet_nperm_", nperm, ".rds")
 saveRDS(res, file = filename)

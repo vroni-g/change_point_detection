@@ -35,6 +35,6 @@ rm(data)
 res <- perm_dist_SLURM(data=data_detrend, fx=fx, nperm=nperm, alpha_local=alpha_local,
                        alpha_global=alpha_global, null_distribution=null_distribution,
                        seed=NULL, block_size=NULL, verbose=TRUE)
-filename <- paste0("testing/detrend_temp_Wtadjust_nperm_", nperm, ".rds")
+filename <- paste0("testing/detrend_temp_tippet_nperm_", nperm, ".rds")
 saveRDS(res, file = filename)
 
