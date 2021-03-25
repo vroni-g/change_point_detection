@@ -62,9 +62,9 @@ for (i in 1:n) {
   res_maxmo <- sctest(temp, functional = maxMOSUM(width = 0.05))
   p_maxmo <- c(p_maxmo, res_maxmo$p.value)
 }
-fpr_LM <- sum(p_LM<0.05)/n # fpr: 0.0412
+fpr_LM <- sum(p_LM<0.05)/n # fpr: 0.0412, 0.0403
 cat(paste('False positive rate for supLM is: ', fpr_LM))
-fpr_maxmo <- sum(p_maxmo<0.05)/n # fpr: 0.02
+fpr_maxmo <- sum(p_maxmo<0.05)/n # fpr: 0.02, 0.0233
 cat(paste('False positive rate for maximum MOSUM is: ', fpr_maxmo))
 
 

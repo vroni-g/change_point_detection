@@ -1,4 +1,5 @@
 # script to send perm_dist to cluster
+setwd("/home/veronika/CPD/change_point_detection")
 suppressMessages(library(devtools))
 suppressMessages(library(tidyverse))
 devtools::load_all()
@@ -11,38 +12,39 @@ null_distribution <- "normal"
 seed=NULL
 block_size=NULL
 verbose=TRUE
-nperm = 1000
-
+nperm = 500
+#nperm = 3
 #**************************************
 # LAI Data
 #**************************************
-load("/home/jose/LAI/data/CHEN_RANGA/AVHRR/yearly_mean/lai_data.RData")
-tibble_list_to_3d_array<- function(data){
-  library(raster)
-  out<- matrix(NA, ncol = data$lat %>% unique %>% length, nrow = data$lon %>% unique %>% length)
-  data_long<- data %>% dplyr::select(data) %>% ungroup %>% unnest(cols = data)
-  n_years<- data_long$t %>% unique %>% length
-  data_list<- vector(mode = "list", length = unique(data_long$t) %>% length)
-  i<- 1
-  for(year in unique(data_long$t)){
-    data_raster<- data_long %>% filter(t==year) %>% rename(x = lon, y = lat) %>%
-      dplyr::select(x, y, lai) %>% rasterFromXYZ(crs = CRS("+init=epsg:4326"))
-    data_list[[i]]<- data_raster$lai %>% as.matrix
-    i<- i+1
-  }
-  data_array<- array(NA, dim= c(dim(data_list[[1]]), length(data_list)))
-  for(i in 1:n_years) data_array[,,i]<- data_list[[i]]
-  return(data_array)
-}
+
+# load("/home/jose/LAI/data/CHEN_RANGA/AVHRR/yearly_mean/lai_data.RData")
+# tibble_list_to_3d_array<- function(data){
+#   library(raster)
+#   out<- matrix(NA, ncol = data$lat %>% unique %>% length, nrow = data$lon %>% unique %>% length)
+#   data_long<- data %>% dplyr::select(data) %>% ungroup %>% unnest(cols = data)
+#   n_years<- data_long$t %>% unique %>% length
+#   data_list<- vector(mode = "list", length = unique(data_long$t) %>% length)
+#   i<- 1
+#   for(year in unique(data_long$t)){
+#     data_raster<- data_long %>% filter(t==year) %>% rename(x = lon, y = lat) %>%
+#       dplyr::select(x, y, lai) %>% rasterFromXYZ(crs = CRS("+init=epsg:4326"))
+#     data_list[[i]]<- data_raster$lai %>% as.matrix
+#     i<- i+1
+#   }
+#   data_array<- array(NA, dim= c(dim(data_list[[1]]), length(data_list)))
+#   for(i in 1:n_years) data_array[,,i]<- data_list[[i]]
+#   return(data_array)
+# }
+# data_lai<- tibble_list_to_3d_array(data)
+# rm(data)
+
+data_lai <- readRDS("/home/veronika/CPD/data/NOAA_LAI/yearly_median/masked/int10000_NOAA_LAI_masked_median_1981_2020.rds")
+# does it matter for CUSUM if values are multiplied by 10000???
 
 
-data_lai<- tibble_list_to_3d_array(data)
-rm(data)
-# filename <- paste0("/home/veronika/CPD/data/lai_yearlymean_3d.rds")
-# saveRDS(data_lai, file = filename)
-# data <- readRDS("/home/veronika/CPD/data/lai_yearlymean_3d.rds")
 res <- perm_dist_SLURM(data=data_lai, fx=fx, nperm=nperm, alpha_local=alpha_local,
                        alpha_global=alpha_global, null_distribution=null_distribution,
                        seed=NULL, block_size=NULL, verbose=TRUE)
-filename <- paste0("testing/LAI_tippet_nperm_", nperm, ".rds")
+filename <- paste0("/home/veronika/CPD/results/NOAA_LAI_tippet_nperm_", nperm, ".rds")
 saveRDS(res, file = filename)

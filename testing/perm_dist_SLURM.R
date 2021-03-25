@@ -23,11 +23,6 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
                      alpha_local, alpha_global, null_distribution,
                      block_size = NULL, seed, verbose = TRUE){
   perm_matrix<- perm_matrix(nobs = dim(data)[3], nperm = nperm, block_size = block_size, seed = seed)
-  maxT<- vector(length = nperm)
-  stcs<- vector(length = nperm)
-  stcs_maxT<- vector(length = nperm)
-  stcs_maxT_all <- vector(length = nperm)
-  perm_results <- vector(length = nperm, mode = 'list') # save all cluster results to derive p-values for cluster
   cat("starting permutations:\n")
 
   tmp_fn<- function(i, perm_matrix, fx, data){
@@ -35,14 +30,27 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
     library(magrittr)
     load_all()
     tmp<- apply(data[,,perm_matrix[i,]], 1:2, fx)
+    cat("Mann Kendall Test performed for permutation ", i)
+    rm(data)
     maxT<- max(abs(as.vector(tmp)), na.rm = TRUE)
     tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution)
-    clust_results <- list(tmp_stcs$clusters)
+    cat("Clusters derived for permutation ", i)
     stcs<- tmp_stcs$stcs
     stcs_maxT<- tmp_stcs$stcs_maxT
     stcs_maxT_all <- tmp_stcs$stcs_maxT_all
-    #if(verbose) if((i%%10)==0) cat(i,"\n")
-    return(list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, stcs_maxT_all=stcs_maxT_all), clust_results))
+    if(i==dim(perm_matrix)[[1]]){
+      r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters, tmp)
+      f <- paste0("/home/veronika/CPD/results/nperm_1000/single_NOAA_LAI_tippet_nperm_", dim(perm_matrix)[[1]],"_",i, ".rds")
+      saveRDS(r, file = f)
+      cat("File saved for permutation ", i)
+      return(r)
+    } else {
+      r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters)
+      f <- paste0("/home/veronika/CPD/results/nperm_1000/single_NOAA_LAI_tippet_nperm_", dim(perm_matrix)[[1]], "_",i, ".rds")
+      saveRDS(r, file = f)
+      cat("File saved for permutation ", i)
+      return(r)
+    }
   }
 
   library(clustermq)
@@ -53,51 +61,68 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
                            fx = fx),
               export = list(alpha_local = alpha_local,
                             null_distribution = null_distribution),
-              n_jobs = 1000, #?? nperm, ??
+              n_jobs = nperm,
               template = list(job_name = "Tippet_test",
                               partition = "all",
-                              log_file = "test_clustadjWt.txt",
-                              memory = 25000,
+                              log_file = "tippet_500n_20000mempercpu.txt",
+                              memory_per_cpu = 20000,
                               n_cpus = 1),
               fail_on_error = FALSE,
               verbose = TRUE)
-  #return(results)
-  #results <- readRDS("detrended_temp_data_Wtadjust_nperm_10.rds")
-  library(magrittr)
-  q_results <- lapply(results, function(x) x[[1]]) %>%
-    do.call(rbind, .)
-  # extract all perm_results and combine in list
-  perm_results <- sapply(results, function(x) x[[2]])
 
-  # get empirical distribution of maxT_all and stcs
-  dis_maxT_all <- ecdf(q_results[,4])
-  dis_stcs<- ecdf(q_results[,2])
-  wt <- vector(length = nperm)
-
-  for(i in 1:nperm){
-    clust_perm <- perm_results[[i]]
-    w_tmp <- vector(length = length(clust_perm$cluster.count))
-    #cat("Number of cluster: ", length(clust_perm$cluster.count))
-    for(j in 1:length(clust_perm$cluster.count)){
-      # retrieve p-values for each cluster
-      p_maxT_all <- 1 - dis_maxT_all(clust_perm$cluster.max[j]) + 1/nperm
-      if(p_maxT_all<=0) p_maxT_all <- 0.000001
-      p_stcs <- 1 - dis_stcs(clust_perm$cluster.count[j]) + 1/nperm
-      if(p_stcs<=0) p_stcs <- 0.000001
-      # combine in new test statistic
-      w <- 1 - min(log(p_maxT_all), log(p_stcs))
-      if (is.finite(w)){
-        w_tmp[j] <- w
-      } else{
-        w_tmp[j] <- 0
-      }
-    }
-    # get max test statistic value for each permutation
-    wt[i] <- max(w_tmp, na.rm = TRUE)
-  }
-
-  cat("finished!\n\n")
-  return(list(maxT = q_results[,1], stcs = q_results[,2], stcs_maxT = q_results[,3], wt = wt, original_wt = w_tmp,
-              original_data = clust_perm))
+#
+#
+#   library(tidyverse)
+#   library(magrittr)
+#   q_results <- lapply(results, function(x) x[[1]]) %>%
+#     do.call(rbind, .)
+#   # extract all perm_results and combine in list
+#   perm_results <- sapply(results, function(x) x[[2]])
+#   # extract original statistic values
+#   original_stat <- results[[nperm]][[3]]
+#   rm(results)
+#
+#   # get empirical distribution of maxT_all and stcs
+#   dis_maxT_all <- ecdf(q_results[,4])
+#   dis_stcs<- ecdf(q_results[,2])
+#
+#   get_wt <- function(clust_perm, dis_maxT_all, dis_stcs, nperm, last = FALSE){
+#     # retrieve p-values for cluster size and cluster maximum for each cluster in the current permutation
+#     get_p <- function(j, clust_perm, dis_maxT_all, dis_stcs, nperm){
+#       p_maxT_all <- 1 - dis_maxT_all(clust_perm$cluster.max[j]) + 1/nperm
+#       if(p_maxT_all<=0) p_maxT_all <- 0.000001
+#       p_stcs <- 1 - dis_stcs(clust_perm$cluster.count[j]) + 1/nperm
+#       if(p_stcs<=0) p_stcs <- 0.000001
+#       # combine in new test statistic
+#       w <- 1 - min(log(p_maxT_all), log(p_stcs))
+#       if (is.finite(w)){
+#         return(w)
+#       } else{
+#         return(0)
+#       }
+#     }
+#     js <- seq(1:length(clust_perm$cluster.count))
+#     # map over each cluster
+#     w_tmp <- purrr::map(js, get_p, clust_perm = clust_perm, dis_maxT_all = dis_maxT_all, dis_stcs = dis_stcs, nperm = nperm)
+#     # return maximum tippet value for current permutation
+#     if(last){
+#       return(list(max(unlist(w_tmp), na.rm = TRUE), unlist(w_tmp)))
+#     } else {
+#       return(max(unlist(w_tmp), na.rm = TRUE))
+#     }
+#   }
+#   # map over all permutations but the last one and retrieve each maximum tippet statistic
+#   wt <- purrr::map(perm_results[1:(nperm-1)], get_wt,
+#                    dis_maxT_all = dis_maxT_all, dis_stcs = dis_stcs, nperm = nperm) %>%
+#     unlist()
+#   # get values for last permutation and also return original tippet values
+#   l <- get_wt(perm_results[[nperm]], dis_maxT_all = dis_maxT_all,
+#               dis_stcs = dis_stcs, last = TRUE, nperm = nperm)
+#   # append last maximum tippet value to the rest
+#   wt <- c(wt, l[[1]])
+#
+#   cat("finished!\n\n")
+#   return(list(maxT = q_results[,1], stcs = q_results[,2], stcs_maxT = q_results[,3], wt = wt, original_wt = l[[2]],
+#               original_cluster = perm_results[[nperm]], original_stat = original_stat))
 }
 
