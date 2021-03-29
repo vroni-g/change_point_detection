@@ -3,7 +3,7 @@
 library(tidyverse)
 library(TSstudio)
 
-#trend <- rep(sin(2*pi*c(0:11)/12),20)
+
 trend <- rep(sin(2*pi*c(0:11)/12),200) # trend for annual means
 
 annual_means <- function(trend){
@@ -20,6 +20,8 @@ n <- 10000
 
 # BFAST ----
 #*********************************************************************
+# we need seasonal data for BFAST
+# trend <- rep(sin(2*pi*c(0:11)/12),20)
 # library(bfast)
 # ti <- c()
 # for (i in 1:n) {
@@ -82,9 +84,9 @@ for (i in 1:n) {
   res_maxmo <- sctest(temp, functional = maxMOSUM(width = 0.05))
   p_maxmo <- c(p_maxmo, res_maxmo$p.value)
 }
-fpr_LM <- sum(p_LM<0.05)/n # is 0, annual means: 0.0426, random data (no season): 0.0412
+fpr_LM <- sum(p_LM<0.05)/n # annual means: 0.0426, random data (no season): 0.0412
 cat(paste('False positive rate for supLM is: ', fpr_LM))
-fpr_maxmo <- sum(p_maxmo<0.05)/n # is 0, annual means: 0.0236, random data (no season): 0.02
+fpr_maxmo <- sum(p_maxmo<0.05)/n # annual means: 0.0236, random data (no season): 0.02
 cat(paste('False positive rate for maximum MOSUM is: ', fpr_maxmo))
 
 

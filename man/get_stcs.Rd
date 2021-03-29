@@ -16,8 +16,8 @@ t distributed test statistics, ignored if the test statistic is normal}
 \item{thr}{Threshold of significance.}
 }
 \value{
-A number specifying the size, in number of grid cells, of the largest
-exceedance cluster.
+A number, stcs, specifying the size, in number of grid cells, of the largest
+exceedance cluster and a matrix containing the detected clusters.
 }
 \description{
 From data in a matrix, finds the largest cluster size of grid cells above

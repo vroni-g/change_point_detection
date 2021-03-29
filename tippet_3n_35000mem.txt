@@ -1,0 +1,135 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+Lmod has detected the following error: The following module(s) are unknown:
+"byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+Lmod has detected the following error: The following module(s) are unknown:
+"byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+
+
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+During startup - During startup - During startup - Warning message:
+Warning message:
+Setting LC_CTYPE failed, using "C" 
+Setting LC_CTYPE failed, using "C" 
+Warning message:
+Setting LC_CTYPE failed, using "C" 
+> > clustermq:::worker("tcp://edi:9108")
+clustermq:::worker("tcp://edi:9108")
+> clustermq:::worker("tcp://edi:9108")
+2021-03-26 07:43:56.567265 | Master: tcp://edi:9108
+2021-03-26 07:43:56.567290 | Master: tcp://edi:9108
+2021-03-26 07:43:56.567408 | Master: tcp://edi:9108
+2021-03-26 07:43:56.589907 | WORKER_UP to: tcp://edi:9108
+2021-03-26 07:43:56.589908 | WORKER_UP to: tcp://edi:9108
+2021-03-26 07:43:56.590159 | WORKER_UP to: tcp://edi:9108
+Warning: namespace 'PerMuTe' is not available and has been replaced
+by .GlobalEnv when processing object '<unknown>'
+2021-03-26 07:45:36.303107 | > DO_SETUP (5.356s wait)
+2021-03-26 07:45:36.308112 | token from msg: dlwgx
+2021-03-26 07:45:36.318098 | > DO_CHUNK (0.000s wait)
+Loading required package: usethis
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  1  at  Fri Mar 26 07:45:44 2021 
+Warning: namespace 'PerMuTe' is not available and has been replaced
+by .GlobalEnv when processing object '<unknown>'
+2021-03-26 07:45:44.443112 | > DO_SETUP (5.590s wait)
+2021-03-26 07:45:44.444541 | token from msg: dlwgx
+2021-03-26 07:45:44.447475 | > DO_CHUNK (0.000s wait)
+Loading required package: usethis
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  2  at  Fri Mar 26 07:45:47 2021 
+Warning: namespace 'PerMuTe' is not available and has been replaced
+by .GlobalEnv when processing object '<unknown>'
+2021-03-26 07:45:48.352138 | > DO_SETUP (5.356s wait)
+2021-03-26 07:45:48.354013 | token from msg: dlwgx
+2021-03-26 07:45:48.357263 | > DO_CHUNK (0.000s wait)
+Loading required package: usethis
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  3  at  Fri Mar 26 07:45:51 2021 
+slurmstepd: error: *** JOB 38981 ON c0 CANCELLED AT 2021-03-26T07:46:26 ***
+slurmstepd: error: *** JOB 38983 ON c0 CANCELLED AT 2021-03-26T07:46:26 ***
+slurmstepd: error: *** JOB 38982 ON c0 CANCELLED AT 2021-03-26T07:46:26 ***

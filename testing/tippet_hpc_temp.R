@@ -31,10 +31,10 @@ data_detrend<- data %>% apply(1:2, # apply(1:2,...) will apply function to every
 )
 
 data_detrend <- aperm(data_detrend, c(2,3,1)) # transpose it to put lat & long in the first dimensions again
-data=data_detrend
-
-res <- perm_dist_SLURM(data=data, fx=fx, nperm=nperm, alpha_local=alpha_local,
+rm(data)
+res <- perm_dist_SLURM(data=data_detrend, fx=fx, nperm=nperm, alpha_local=alpha_local,
                        alpha_global=alpha_global, null_distribution=null_distribution,
                        seed=NULL, block_size=NULL, verbose=TRUE)
-filename <- paste0("testing/detrended_temp_data_Wtadjust_nperm_", nperm, ".rds")
+filename <- paste0("testing/detrend_temp_tippet_nperm_", nperm, ".rds")
 saveRDS(res, file = filename)
+
