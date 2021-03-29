@@ -1,9 +1,9 @@
 # script to send perm_dist to cluster
-setwd("/home/veronika/CPD/change_point_detection")
+#setwd("/home/veronika/CPD/change_point_detection")
 suppressMessages(library(devtools))
 suppressMessages(library(tidyverse))
-devtools::load_all()
-source("testing/perm_dist_SLURM.R")
+devtools::load_all("/home/veronika/CPD/change_point_detection/")
+source("/home/veronika/CPD/change_point_detection/testing/perm_dist_SLURM.R")
 
 fx=sample_mk_function
 alpha_local=0.05
@@ -12,10 +12,23 @@ null_distribution <- "normal"
 seed=NULL
 block_size=NULL
 verbose=TRUE
-nperm = 500
+nperm = 100
 #nperm = 3
+
+data_lai <- readRDS("/home/veronika/CPD/data/NOAA_LAI/yearly_median/masked/int10000_NOAA_LAI_masked_median_1981_2020.rds")
+# does it matter for CUSUM if values are multiplied by 10000?
+
+
+res <- perm_dist_SLURM(data=data_lai, fx=fx, nperm=nperm, alpha_local=alpha_local,
+                       alpha_global=alpha_global, null_distribution=null_distribution,
+                       seed=NULL, block_size=NULL, verbose=TRUE)
+filename <- paste0("/home/veronika/CPD/results/NOAA_LAI_tippet_nperm_", nperm, ".rds")
+saveRDS(res, file = filename)
+
+
+
 #**************************************
-# LAI Data
+# BU LAI Data
 #**************************************
 
 # load("/home/jose/LAI/data/CHEN_RANGA/AVHRR/yearly_mean/lai_data.RData")
@@ -38,13 +51,3 @@ nperm = 500
 # }
 # data_lai<- tibble_list_to_3d_array(data)
 # rm(data)
-
-data_lai <- readRDS("/home/veronika/CPD/data/NOAA_LAI/yearly_median/masked/int10000_NOAA_LAI_masked_median_1981_2020.rds")
-# does it matter for CUSUM if values are multiplied by 10000???
-
-
-res <- perm_dist_SLURM(data=data_lai, fx=fx, nperm=nperm, alpha_local=alpha_local,
-                       alpha_global=alpha_global, null_distribution=null_distribution,
-                       seed=NULL, block_size=NULL, verbose=TRUE)
-filename <- paste0("/home/veronika/CPD/results/NOAA_LAI_tippet_nperm_", nperm, ".rds")
-saveRDS(res, file = filename)

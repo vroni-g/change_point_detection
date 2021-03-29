@@ -29,12 +29,14 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
     library(devtools)
     library(magrittr)
     load_all()
+    cat("Starting Mann Kendall Test for permutation ", i, " at ", date(), "\n")
     tmp<- apply(data[,,perm_matrix[i,]], 1:2, fx)
-    cat("Mann Kendall Test performed for permutation ", i)
+    cat("Mann Kendall Test finished for permutation ", i, " at ", date(), "\n")
     rm(data)
     maxT<- max(abs(as.vector(tmp)), na.rm = TRUE)
+    cat("Starting cluster derivation for permutation ", i, " at ", date(), "\n")
     tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution)
-    cat("Clusters derived for permutation ", i)
+    cat("Clusters derived completely for permutation ", i, " at ", date(), "\n")
     stcs<- tmp_stcs$stcs
     stcs_maxT<- tmp_stcs$stcs_maxT
     stcs_maxT_all <- tmp_stcs$stcs_maxT_all
@@ -64,8 +66,8 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
               n_jobs = nperm,
               template = list(job_name = "Tippet_test",
                               partition = "all",
-                              log_file = "tippet_500n_20000mempercpu.txt",
-                              memory_per_cpu = 20000,
+                              log_file = "tippet_100n_35000mem.txt",
+                              memory = 35000,
                               n_cpus = 1),
               fail_on_error = FALSE,
               verbose = TRUE)
