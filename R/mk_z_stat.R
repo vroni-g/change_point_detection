@@ -11,6 +11,7 @@ mk_z_stat<- function(x){
   if(length(x)<8) return(NA)
 
   s<- mk_s(x)
+  if(is_empty(s)) return(NA)
   n<- length(x)
   var_s<- n*(n-1)*(2*n+5)/18
   if (length(unique(x)) < n) {
