@@ -7,11 +7,10 @@
 #' @export cusum_stat
 
 cusum_stat <- function(x){
-  if(any(is.na(x))) x<- x[!is.na(x)]
-  if(length(x)<8) return(NA)
-
   res <- ts(x, frequency=1, start=c(1980)) %>%
-    strucchange::efp(. ~ 1, ., type = 'Rec-CUSUM') %>%
+    strucchange::efp(. ~ time(.), ., type = 'Rec-CUSUM') %>%
     strucchange::sctest()
+  if(rlang::is_empty(res$statistic)) return(NA)
+  if(is.na(res$statistic)) return(NA)
   return(res$statistic)
 }

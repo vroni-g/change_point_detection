@@ -9,8 +9,15 @@
 #' @export cusum_function
 
 cusum_function<- function(x){
+  if(any(is.na(x))) x<- x[!is.na(x)]
+  if(length(x)<8) return(NA)
+
   x <- x[is.finite(x)]
   xn <- (x[-1] - (x[-length(x)] * rk_fn(x)))
   s <- cusum_stat(xn)
+
+  if(is.na(s)) return(NA)
+  if(rlang::is_empty(s)) return(NA)
+
   return(s)
 }

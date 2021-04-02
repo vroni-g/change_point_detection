@@ -7,11 +7,10 @@
 #' @export mk_z_stat
 
 mk_z_stat<- function(x){
-  if(any(is.na(x))) x<- x[!is.na(x)]
-  if(length(x)<8) return(NA)
-
   s<- mk_s(x)
-  if(is_empty(s)) return(NA)
+  if(rlang::is_empty(s)) return(NA)
+  if(is.na(s)) return(NA)
+
   n<- length(x)
   var_s<- n*(n-1)*(2*n+5)/18
   if (length(unique(x)) < n) {
@@ -27,5 +26,6 @@ mk_z_stat<- function(x){
   if(s>0) z<- (s-1)/sqrt(var_s)
   if(s==0) z<- 0
   if(s<0) z<- (s+1)/sqrt(var_s)
+
   return(z)
 }

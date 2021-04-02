@@ -9,8 +9,16 @@
 #' @export sample_mk_function
 
 sample_mk_function<- function(x){
+  if(any(is.na(x))) x <- x[!is.na(x)] # moved this here from mk_z_stat.R
+  if(length(x)<8) return(NA)
+
   x <- x[is.finite(x)]
   xn <- (x[-1] - (x[-length(x)] * rk_fn(x)))
+
   z<- mk_z_stat(xn)
+  #cat("Return MK Z Statistic")
+  if(is.na(z)) return(NA)
+  if(rlang::is_empty(z)) return(NA)
+
   return(z)
 }

@@ -1,0 +1,65 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+During startup - Warning message:
+Setting LC_CTYPE failed, using "C" 
+> clustermq:::worker("tcp://edi:8913")
+2021-04-01 08:50:31.026827 | Master: tcp://edi:8913
+2021-04-01 08:50:31.406781 | WORKER_UP to: tcp://edi:8913
+2021-04-01 09:00:57.961915 | > DO_SETUP (28.486s wait)
+2021-04-01 09:00:57.971727 | token from msg: jdmfj
+2021-04-01 09:00:57.982701 | > DO_CHUNK (0.000s wait)
+Loading required package: usethis
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  16  at  Thu Apr  1 09:01:13 2021 
+Mann Kendall Test finished for permutation  16  at  Thu Apr  1 10:34:27 2021 
+Starting cluster derivation for permutation  16  at  Thu Apr  1 10:34:29 2021 
+Clusters derived completely for permutation  16  at  Thu Apr  1 14:49:23 2021 
+File saved for permutation  162021-04-01 14:49:25.913745 | completed 1 in 15363.58s [user], 5531.15s [system], 20907.93s [elapsed]
+2021-04-01 14:49:27.888683 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  46  at  Thu Apr  1 14:49:30 2021 
+Mann Kendall Test finished for permutation  46  at  Thu Apr  1 15:48:34 2021 
+Starting cluster derivation for permutation  46  at  Thu Apr  1 15:48:36 2021 
+Clusters derived completely for permutation  46  at  Thu Apr  1 21:29:42 2021 
+File saved for permutation  462021-04-01 21:29:45.889762 | completed 1 in 16298.32s [user], 7714.01s [system], 24018.00s [elapsed]
+2021-04-01 21:29:47.937621 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  85  at  Thu Apr  1 21:29:51 2021 
+Mann Kendall Test finished for permutation  85  at  Thu Apr  1 22:30:17 2021 
+Starting cluster derivation for permutation  85  at  Thu Apr  1 22:30:18 2021 
+Clusters derived completely for permutation  85  at  Fri Apr  2 04:42:10 2021 
+File saved for permutation  852021-04-02 04:42:12.741966 | completed 1 in 17421.34s [user], 8515.36s [system], 25944.78s [elapsed]
+2021-04-02 04:42:15.038726 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  130  at  Fri Apr  2 04:42:16 2021 
+Mann Kendall Test finished for permutation  130  at  Fri Apr  2 05:41:30 2021 
+Starting cluster derivation for permutation  130  at  Fri Apr  2 05:41:31 2021 
