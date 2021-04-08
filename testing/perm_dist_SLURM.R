@@ -19,18 +19,25 @@
 #' @export perm_dist
 #'
 
-perm_dist_SLURM<- function(data, fx, nperm=1000,
+perm_dist_SLURM<- function(data, nperm=1000, #fx,
                      alpha_local, alpha_global, null_distribution,
                      block_size = NULL, seed, verbose = TRUE){
-  perm_matrix<- perm_matrix(nobs = dim(data)[3], nperm = nperm, block_size = block_size, seed = seed)
+  library(devtools)
+  load_all()
+  perm_mat <- perm_matrix(nobs = dim(data)[3], nperm = nperm, block_size = block_size, seed = seed)
   cat("starting permutations:\n")
 
-  tmp_fn<- function(i, perm_matrix, fx, data){
+  #tmp_fn<- function(i, perm_mat, fx, data){
+  tmp_fn<- function(i, perm_mat, data){
     library(devtools)
     library(magrittr)
     load_all()
     cat("Starting Mann Kendall Test for permutation ", i, " at ", date(), "\n")
-    tmp<- apply(data[,,perm_matrix[i,]], 1:2, fx)
+    #fx<- function(x) mean(x, na.rm = TRUE)
+    #tmp<- apply(data[,,perm_mat[i,]], 1:2, fx)
+
+    tmp<- apply(data[,,perm_mat[i,]], 1:2, sample_mk_function)
+
     cat("Mann Kendall Test finished for permutation ", i, " at ", date(), "\n")
     rm(data)
     maxT<- max(abs(as.vector(tmp)), na.rm = TRUE)
@@ -38,17 +45,16 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
     tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution)
     cat("Clusters derived completely for permutation ", i, " at ", date(), "\n")
     stcs<- tmp_stcs$stcs
-    stcs_maxT<- tmp_stcs$stcs_maxT
     stcs_maxT_all <- tmp_stcs$stcs_maxT_all
-    if(i==dim(perm_matrix)[[1]]){
-      r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters, tmp)
-      f <- paste0("/home/veronika/CPD/results/nperm_1000/single_NOAA_LAI_tippet_nperm_", dim(perm_matrix)[[1]],"_",i, ".rds")
+    if(i==dim(perm_mat)[[1]]){
+      r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters, tmp)
+      f <- paste0("/home/veronika/CPD/results/nperm_1000/single_NOAA_LAI_tippet_nperm_", dim(perm_mat)[[1]],"_",i, ".rds")
       saveRDS(r, file = f)
       cat("File saved for permutation ", i)
       return(r)
     } else {
-      r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters)
-      f <- paste0("/home/veronika/CPD/results/nperm_1000/single_NOAA_LAI_tippet_nperm_", dim(perm_matrix)[[1]], "_",i, ".rds")
+      r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters)
+      f <- paste0("/home/veronika/CPD/results/nperm_1000/single_NOAA_LAI_tippet_nperm_", dim(perm_mat)[[1]], "_",i, ".rds")
       saveRDS(r, file = f)
       cat("File saved for permutation ", i)
       return(r)
@@ -58,34 +64,37 @@ perm_dist_SLURM<- function(data, fx, nperm=1000,
   library(clustermq)
   results<- Q(tmp_fn,
               i=1:nperm,
-              const = list(perm_matrix = perm_matrix,
-                           data = data,
-                           fx = fx),
+              const = list(perm_mat = perm_mat,
+                           data = data),
+                           #fx = fx),
               export = list(alpha_local = alpha_local,
                             null_distribution = null_distribution),
               n_jobs = nperm,
               template = list(job_name = "Tippet_test",
                               partition = "all",
-                              log_file = "tippet_100n_35000mem.txt",
-                              memory = 35000,
+                              log_file = "logs/tippet_1000n_50000mem_%a.txt",
+                              #memory_per_cpu = 20000,
+                              memory = 50000,
                               n_cpus = 1),
               fail_on_error = FALSE,
               verbose = TRUE)
 
-#
-#
-#   library(tidyverse)
-#   library(magrittr)
-#   q_results <- lapply(results, function(x) x[[1]]) %>%
-#     do.call(rbind, .)
-#   # extract all perm_results and combine in list
-#   perm_results <- sapply(results, function(x) x[[2]])
-#   # extract original statistic values
-#   original_stat <- results[[nperm]][[3]]
-#   rm(results)
+
+  library(tidyverse)
+  library(magrittr)
+  q_results <- lapply(results, function(x) x[[1]]) %>%
+    do.call(rbind, .)
+  # extract all perm_results and combine in list
+  perm_results <- sapply(results, function(x) x[[2]])
+  # extract original statistic values
+  original_stat <- results[[nperm]][[3]]
+  rm(results)
+
+  res <- list(q_results, perm_results, original_stat)
+  return(res)
 #
 #   # get empirical distribution of maxT_all and stcs
-#   dis_maxT_all <- ecdf(q_results[,4])
+#   dis_maxT_all <- ecdf(q_results[,3])
 #   dis_stcs<- ecdf(q_results[,2])
 #
 #   get_wt <- function(clust_perm, dis_maxT_all, dis_stcs, nperm, last = FALSE){

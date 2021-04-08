@@ -11,10 +11,11 @@ null_distribution <- "normal"
 seed=NULL
 block_size=NULL
 verbose=TRUE
-nperm = 100
+nperm = 1000
 #nperm = 3
 
-data_lai <- readRDS("/home/veronika/CPD/data/NOAA_LAI/yearly_median/masked/int10000_NOAA_LAI_masked_median_1981_2020.rds")
+#data_lai <- readRDS("/home/veronika/CPD/data/NOAA_LAI/yearly_median/masked/int10000_NOAA_LAI_masked_median_1981_2020.rds")
+data_lai <- readRDS("/home/veronika/CPD/data/NOAA_LAI/yearly_median/masked/int10000_NOAA_LAI_masked_median_1981_2019.rds")
 # does it matter for CUSUM if values are multiplied by 10000?
 # print(object.size(data_lai),units="auto")
 # library(Matrix)
@@ -22,7 +23,7 @@ data_lai <- readRDS("/home/veronika/CPD/data/NOAA_LAI/yearly_median/masked/int10
 # print(object.size(data_lai_sparse),units="auto")
 #
 
-res <- perm_dist_SLURM(data=data_lai, fx=fx, nperm=nperm, alpha_local=alpha_local,
+res <- perm_dist_SLURM(data=data_lai,  nperm=nperm, alpha_local=alpha_local, #fx=fx,
                        alpha_global=alpha_global, null_distribution=null_distribution,
                        seed=NULL, block_size=NULL, verbose=TRUE)
 
@@ -36,6 +37,8 @@ res <- perm_dist_SLURM_2d(data=data_lai_2d, fx=fx, nperm=nperm, alpha_local=alph
                        alpha_global=alpha_global, null_distribution=null_distribution,
                        seed=NULL, block_size=NULL, verbose=TRUE)
 ################################ 2d approach ####################################
+
+
 
 
 #**************************************
