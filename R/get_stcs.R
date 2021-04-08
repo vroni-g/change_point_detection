@@ -12,9 +12,15 @@
 #' @export get_stcs
 #' @import osc
 
-get_stcs<- function(data, alpha_local, null_distribution, data_dim){
+get_stcs<- function(data, alpha_local, null_distribution, data_dim, data_info=NULL){
   if(null_distribution == "normal") thr<- qnorm(1-alpha_local/2)
   if(null_distribution == "t") thr<- qt(1-alpha_local/2, df = data_dim[3]-2)
+  if(!is.null(data_info)){
+    tmp<- matrix(NA, ncol = data_info$ncol, nrow = data_info$nrow)
+    tmp[data_info$wh.sel]<- data
+    data<- tmp
+  }
+
 
   pixel_sign<- sign(data)
   pixel_significant<- abs(data)>thr
