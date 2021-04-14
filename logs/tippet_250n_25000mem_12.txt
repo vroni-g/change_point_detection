@@ -1,0 +1,81 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+During startup - Warning message:
+Setting LC_CTYPE failed, using "C" 
+> clustermq:::worker("tcp://edi:7781")
+2021-04-09 15:18:37.330565 | Master: tcp://edi:7781
+2021-04-09 15:18:37.362823 | WORKER_UP to: tcp://edi:7781
+Warning: namespace 'PerMuTe' is not available and has been replaced
+by .GlobalEnv when processing object '<unknown>'
+2021-04-09 15:18:59.141689 | > DO_SETUP (3.135s wait)
+2021-04-09 15:18:59.148792 | token from msg: pfytz
+2021-04-09 15:18:59.162611 | > DO_CHUNK (0.001s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  16  at  Fri Apr  9 15:19:13 2021 
+Mann Kendall Test finished for permutation  16  at  Fri Apr  9 16:04:06 2021 
+Starting cluster derivation for permutation  16  at  Fri Apr  9 16:04:06 2021 
+Clusters derived completely for permutation  16  at  Fri Apr  9 19:31:04 2021 
+File saved for permutation  162021-04-09 19:31:07.528034 | completed 1 in 12902.68s [user], 2214.29s [system], 15128.36s [elapsed]
+2021-04-09 19:31:09.406634 | > DO_CHUNK (0.001s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  64  at  Fri Apr  9 19:31:12 2021 
+Mann Kendall Test finished for permutation  64  at  Fri Apr  9 20:21:39 2021 
+Starting cluster derivation for permutation  64  at  Fri Apr  9 20:21:39 2021 
+Clusters derived completely for permutation  64  at  Sat Apr 10 00:32:45 2021 
+File saved for permutation  642021-04-10 00:32:47.902872 | completed 1 in 15182.80s [user], 2912.81s [system], 18098.49s [elapsed]
+2021-04-10 00:32:49.756725 | > DO_CHUNK (0.001s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  117  at  Sat Apr 10 00:32:52 2021 
+Mann Kendall Test finished for permutation  117  at  Sat Apr 10 01:21:31 2021 
+Starting cluster derivation for permutation  117  at  Sat Apr 10 01:21:31 2021 
+Clusters derived completely for permutation  117  at  Sat Apr 10 06:24:28 2021 
+File saved for permutation  1172021-04-10 06:24:30.799021 | completed 1 in 17506.72s [user], 3591.25s [system], 21101.04s [elapsed]
+2021-04-10 06:24:32.556851 | > DO_CHUNK (0.001s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  192  at  Sat Apr 10 06:24:34 2021 
+Mann Kendall Test finished for permutation  192  at  Sat Apr 10 07:15:48 2021 
+Starting cluster derivation for permutation  192  at  Sat Apr 10 07:15:48 2021 
+Clusters derived completely for permutation  192  at  Sat Apr 10 10:48:20 2021 
+File saved for permutation  1922021-04-10 10:48:22.407197 | completed 1 in 13244.05s [user], 2583.95s [system], 15829.85s [elapsed]
+2021-04-10 10:48:24.189171 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  242  at  Sat Apr 10 10:48:26 2021 
+Mann Kendall Test finished for permutation  242  at  Sat Apr 10 11:40:02 2021 
+Starting cluster derivation for permutation  242  at  Sat Apr 10 11:40:02 2021 
+Clusters derived completely for permutation  242  at  Sat Apr 10 14:53:14 2021 
+File saved for permutation  2422021-04-10 14:53:16.779409 | completed 1 in 12606.82s [user], 2083.42s [system], 14692.59s [elapsed]
+2021-04-10 14:53:18.453403 | > WORKER_STOP (0.000s wait)
+2021-04-10 14:53:18.455919 | shutting down worker
+2021-04-10 14:53:18.704260 | 
+Total: 5 in 71448.75s [user], 13389.26s [system], 84881.09s [elapsed]
+> 
+> 

@@ -1,0 +1,53 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+During startup - Warning message:
+Setting LC_CTYPE failed, using "C" 
+> clustermq:::worker("tcp://edi:6558")
+2021-04-09 10:52:16.454796 | Master: tcp://edi:6558
+2021-04-09 10:52:16.476568 | WORKER_UP to: tcp://edi:6558
+Warning: namespace 'PerMuTe' is not available and has been replaced
+by .GlobalEnv when processing object '<unknown>'
+2021-04-09 10:52:30.235772 | > DO_SETUP (1.115s wait)
+2021-04-09 10:52:30.239467 | token from msg: ywgcc
+2021-04-09 10:52:30.246643 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  1  at  Fri Apr  9 10:52:33 2021 
+Mann Kendall Test finished for permutation  1  at  Fri Apr  9 11:09:53 2021 
+Starting cluster derivation for permutation  1  at  Fri Apr  9 11:09:53 2021 
+Clusters derived completely for permutation  1  at  Fri Apr  9 11:50:29 2021 
+File saved for permutation  12021-04-09 11:50:30.840817 | completed 1 in 3128.47s [user], 349.17s [system], 3480.59s [elapsed]
+2021-04-09 11:50:32.104855 | > WORKER_STOP (0.000s wait)
+2021-04-09 11:50:32.106381 | shutting down worker
+2021-04-09 11:50:32.207395 | 
+Total: 1 in 3129.65s [user], 350.08s [system], 3495.63s [elapsed]
+> 
+> 

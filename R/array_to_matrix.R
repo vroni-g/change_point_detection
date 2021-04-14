@@ -29,7 +29,7 @@ array_to_matrix<- function(data){
 
     for(i in 2:time_points){
       sel <- as.numeric(!is.na(as.vector(out[[i]]))) + sel
-      print(summary(sel))
+      #print(summary(sel))
     }
     sel<- sel > (time_points*.9) # keep only data points with 90% or more data
   }

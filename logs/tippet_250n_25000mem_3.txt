@@ -1,0 +1,158 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+During startup - Warning message:
+Setting LC_CTYPE failed, using "C" 
+> clustermq:::worker("tcp://edi:7781")
+2021-04-09 14:54:39.230876 | Master: tcp://edi:7781
+2021-04-09 14:54:39.252768 | WORKER_UP to: tcp://edi:7781
+Warning: namespace 'PerMuTe' is not available and has been replaced
+by .GlobalEnv when processing object '<unknown>'
+2021-04-09 14:54:54.916521 | > DO_SETUP (1.150s wait)
+2021-04-09 14:54:54.917951 | token from msg: pfytz
+2021-04-09 14:54:54.920966 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  6  at  Fri Apr  9 14:54:57 2021 
+Mann Kendall Test finished for permutation  6  at  Fri Apr  9 15:12:50 2021 
+Starting cluster derivation for permutation  6  at  Fri Apr  9 15:12:50 2021 
+Clusters derived completely for permutation  6  at  Fri Apr  9 16:00:05 2021 
+File saved for permutation  62021-04-09 16:00:06.562221 | completed 1 in 3392.97s [user], 515.25s [system], 3911.64s [elapsed]
+2021-04-09 16:00:07.844974 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  26  at  Fri Apr  9 16:00:08 2021 
+Mann Kendall Test finished for permutation  26  at  Fri Apr  9 16:19:01 2021 
+Starting cluster derivation for permutation  26  at  Fri Apr  9 16:19:01 2021 
+Clusters derived completely for permutation  26  at  Fri Apr  9 16:58:55 2021 
+File saved for permutation  262021-04-09 16:58:56.242388 | completed 1 in 3075.01s [user], 450.93s [system], 3528.39s [elapsed]
+2021-04-09 16:58:57.516666 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  33  at  Fri Apr  9 16:58:58 2021 
+Mann Kendall Test finished for permutation  33  at  Fri Apr  9 17:16:50 2021 
+Starting cluster derivation for permutation  33  at  Fri Apr  9 17:16:50 2021 
+Clusters derived completely for permutation  33  at  Fri Apr  9 18:27:13 2021 
+File saved for permutation  332021-04-09 18:27:14.690837 | completed 1 in 4516.40s [user], 777.46s [system], 5297.17s [elapsed]
+2021-04-09 18:27:15.964433 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  44  at  Fri Apr  9 18:27:16 2021 
+Mann Kendall Test finished for permutation  44  at  Fri Apr  9 18:45:29 2021 
+Starting cluster derivation for permutation  44  at  Fri Apr  9 18:45:29 2021 
+Clusters derived completely for permutation  44  at  Fri Apr  9 19:40:46 2021 
+File saved for permutation  442021-04-09 19:40:47.466846 | completed 1 in 3782.42s [user], 626.34s [system], 4411.50s [elapsed]
+2021-04-09 19:40:48.690821 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  67  at  Fri Apr  9 19:40:49 2021 
+Mann Kendall Test finished for permutation  67  at  Fri Apr  9 19:58:46 2021 
+Starting cluster derivation for permutation  67  at  Fri Apr  9 19:58:46 2021 
+Clusters derived completely for permutation  67  at  Fri Apr  9 21:11:17 2021 
+File saved for permutation  672021-04-09 21:11:20.243335 | completed 1 in 4612.96s [user], 813.89s [system], 5431.55s [elapsed]
+2021-04-09 21:11:21.497042 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  87  at  Fri Apr  9 21:11:23 2021 
+Mann Kendall Test finished for permutation  87  at  Fri Apr  9 21:29:53 2021 
+Starting cluster derivation for permutation  87  at  Fri Apr  9 21:29:53 2021 
+Clusters derived completely for permutation  87  at  Fri Apr  9 22:19:38 2021 
+File saved for permutation  872021-04-09 22:19:39.509052 | completed 1 in 3530.52s [user], 563.44s [system], 4097.99s [elapsed]
+2021-04-09 22:19:40.777645 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  93  at  Fri Apr  9 22:19:41 2021 
+Mann Kendall Test finished for permutation  93  at  Fri Apr  9 22:37:51 2021 
+Starting cluster derivation for permutation  93  at  Fri Apr  9 22:37:51 2021 
+Clusters derived completely for permutation  93  at  Fri Apr  9 23:44:09 2021 
+File saved for permutation  932021-04-09 23:44:10.123153 | completed 1 in 4319.28s [user], 746.88s [system], 5069.32s [elapsed]
+2021-04-09 23:44:11.347395 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  108  at  Fri Apr  9 23:44:12 2021 
+Mann Kendall Test finished for permutation  108  at  Sat Apr 10 00:01:56 2021 
+Starting cluster derivation for permutation  108  at  Sat Apr 10 00:01:57 2021 
+Clusters derived completely for permutation  108  at  Sat Apr 10 01:18:38 2021 
+File saved for permutation  1082021-04-10 01:18:39.705599 | completed 1 in 4793.41s [user], 871.49s [system], 5668.36s [elapsed]
+2021-04-10 01:18:40.932962 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  132  at  Sat Apr 10 01:18:41 2021 
+Mann Kendall Test finished for permutation  132  at  Sat Apr 10 01:37:11 2021 
+Starting cluster derivation for permutation  132  at  Sat Apr 10 01:37:11 2021 
+Clusters derived completely for permutation  132  at  Sat Apr 10 02:33:36 2021 
+File saved for permutation  1322021-04-10 02:33:37.481560 | completed 1 in 3871.87s [user], 621.86s [system], 4496.55s [elapsed]
+2021-04-10 02:33:38.770749 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  147  at  Sat Apr 10 02:33:39 2021 
+Mann Kendall Test finished for permutation  147  at  Sat Apr 10 02:52:09 2021 
+Starting cluster derivation for permutation  147  at  Sat Apr 10 02:52:09 2021 
+Clusters derived completely for permutation  147  at  Sat Apr 10 04:12:27 2021 
+File saved for permutation  1472021-04-10 04:12:28.510495 | completed 1 in 5019.28s [user], 906.88s [system], 5929.74s [elapsed]
+2021-04-10 04:12:29.807214 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  161  at  Sat Apr 10 04:12:30 2021 
+Mann Kendall Test finished for permutation  161  at  Sat Apr 10 04:30:32 2021 
+Starting cluster derivation for permutation  161  at  Sat Apr 10 04:30:32 2021 
+Clusters derived completely for permutation  161  at  Sat Apr 10 06:12:02 2021 
+File saved for permutation  1612021-04-10 06:12:04.081402 | completed 1 in 6034.99s [user], 1135.04s [system], 7174.27s [elapsed]
+2021-04-10 06:12:05.385846 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  189  at  Sat Apr 10 06:12:06 2021 
+Mann Kendall Test finished for permutation  189  at  Sat Apr 10 06:30:23 2021 
+Starting cluster derivation for permutation  189  at  Sat Apr 10 06:30:23 2021 
+Clusters derived completely for permutation  189  at  Sat Apr 10 07:18:06 2021 
+File saved for permutation  1892021-04-10 07:18:07.836735 | completed 1 in 3428.53s [user], 531.42s [system], 3962.45s [elapsed]
+2021-04-10 07:18:09.089916 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  204  at  Sat Apr 10 07:18:10 2021 
+Mann Kendall Test finished for permutation  204  at  Sat Apr 10 07:36:16 2021 
+Starting cluster derivation for permutation  204  at  Sat Apr 10 07:36:16 2021 
+Clusters derived completely for permutation  204  at  Sat Apr 10 08:28:26 2021 
+File saved for permutation  2042021-04-10 08:28:27.950382 | completed 1 in 3638.78s [user], 577.36s [system], 4218.86s [elapsed]
+2021-04-10 08:28:29.230842 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  213  at  Sat Apr 10 08:28:30 2021 
+Mann Kendall Test finished for permutation  213  at  Sat Apr 10 08:46:54 2021 
+Starting cluster derivation for permutation  213  at  Sat Apr 10 08:46:54 2021 
+Clusters derived completely for permutation  213  at  Sat Apr 10 09:51:28 2021 
+File saved for permutation  2132021-04-10 09:51:29.411090 | completed 1 in 4242.43s [user], 733.49s [system], 4980.11s [elapsed]
+2021-04-10 09:51:30.620933 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  232  at  Sat Apr 10 09:51:31 2021 
+Mann Kendall Test finished for permutation  232  at  Sat Apr 10 10:09:32 2021 
+Starting cluster derivation for permutation  232  at  Sat Apr 10 10:09:32 2021 
+Clusters derived completely for permutation  232  at  Sat Apr 10 11:16:34 2021 
+File saved for permutation  2322021-04-10 11:16:36.104414 | completed 1 in 4351.28s [user], 750.78s [system], 5105.48s [elapsed]
+2021-04-10 11:16:37.400693 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Mann Kendall Test for permutation  249  at  Sat Apr 10 11:16:38 2021 
+Mann Kendall Test finished for permutation  249  at  Sat Apr 10 11:34:47 2021 
+Starting cluster derivation for permutation  249  at  Sat Apr 10 11:34:47 2021 
+Clusters derived completely for permutation  249  at  Sat Apr 10 13:23:33 2021 
+File saved for permutation  2492021-04-10 13:23:34.461864 | completed 1 in 6544.07s [user], 1069.47s [system], 7617.06s [elapsed]
+2021-04-10 13:23:35.733932 | > WORKER_STOP (0.000s wait)
+2021-04-10 13:23:35.735390 | shutting down worker
+2021-04-10 13:23:35.835942 | 
+Total: 16 in 69157.85s [user], 11693.69s [system], 80936.48s [elapsed]
+> 
+> 

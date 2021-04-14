@@ -4,17 +4,19 @@
 #' the specified threshold.
 #' @param data Matrix containing data. Should be a statistical image, i.e., the
 #' test statistic of each grid cell
-#' @param thr Threshold of significance.
+#' @param alpa_local Alpha level for derivation of supra-threshold cluster
+#' @param data_dim dimensions of original data. Used for calculating df for
+#' t distributed test statistics, ignored if the test statistic is normal
 #' @return A number, stcs, specifying the size, in number of grid cells, of the largest
 #' exceedance cluster and a matrix containing the detected clusters.
-#' @param data_dim dimesions of original data. Used for calculating df for
-#' t distributed test statistics, ignored if the test statistic is normal
 #' @export get_stcs
 #' @import osc
+
 
 get_stcs<- function(data, alpha_local, null_distribution, data_dim, data_info=NULL){
   if(null_distribution == "normal") thr<- qnorm(1-alpha_local/2)
   if(null_distribution == "t") thr<- qt(1-alpha_local/2, df = data_dim[3]-2)
+
   if(!is.null(data_info)){
     tmp<- matrix(NA, ncol = data_info$ncol, nrow = data_info$nrow)
     tmp[data_info$wh.sel]<- data
@@ -55,6 +57,8 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim, data_info=NU
   stcs<- max(clusters_sep$cluster.count, na.rm = TRUE)
   stcs_idx<- which(clusters_sep$cluster.count==stcs)
   stcs_cluster_results<- data[clusters_sep$clusters==stcs_idx] # retrieve all cells (by position in matrix?) that belong to the biggest cluster
+
+  # this is the maximum of the biggest cluster, don't need it for Tippet:
   #stcs_maxT<- max(abs(stcs_cluster_results), na.rm = TRUE)
 
   allcluster_max <- c()
@@ -65,7 +69,7 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim, data_info=NU
     clusters_sep$cluster.max[i] <- clust_max # assign each cluster its maximum
     allcluster_max <- c(allcluster_max, clust_max)
   }
-  stcs_maxT_all <- max(allcluster_max, na.rm = TRUE) # get maximum of all cluster maxima
+  stcs_maxT_all <- max(allcluster_max, na.rm = TRUE) # get maximum of all cluster maxima regardless the cluster size
   if (!is.finite(stcs_maxT_all)) stcs_maxT_all <- 0
 
   return(list(stcs=stcs, clusters=clusters_sep, stcs_maxT_all=stcs_maxT_all))#, stcs_maxT = stcs_maxT))
