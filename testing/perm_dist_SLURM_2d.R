@@ -29,9 +29,9 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
   tmp_fn<- function(i, perm_matrix, fx, data){
     library(magrittr)
     devtools::load_all("/home/veronika/CPD/change_point_detection/")
-    cat("Starting Mann Kendall Test for permutation ", i, " at ", date(), "\n")
+    cat("Starting Test for permutation ", i, " at ", date(), "\n")
     tmp<- apply(data$Y[perm_matrix[i,],], 2, fx)
-    cat("Mann Kendall Test finished for permutation ", i, " at ", date(), "\n")
+    cat("Test finished for permutation ", i, " at ", date(), "\n")
     maxT<- max(abs(tmp), na.rm = TRUE)
     cat("Starting cluster derivation for permutation ", i, " at ", date(), "\n")
     tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution, data_info = data[2:5])
@@ -41,13 +41,13 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
     stcs_maxT_all <- tmp_stcs$stcs_maxT_all
     if(i==dim(perm_matrix)[[1]]){
       r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters, tmp)
-      f <- paste0("/home/veronika/CPD/results/nperm_rest/rest_single_NOAA_LAI_tippet_nperm_", dim(perm_matrix)[[1]],"_",i, ".rds")
+      f <- paste0("/home/veronika/CPD/results/nperm_cusum/single_NOAA_LAI_cusum_nperm_", dim(perm_matrix)[[1]],"_",i, ".rds")
       saveRDS(r, file = f)
       cat("File saved for permutation ", i)
       return(r)
     } else {
       r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters)
-      f <- paste0("/home/veronika/CPD/results/nperm_rest/rest_single_NOAA_LAI_tippet_nperm_", dim(perm_matrix)[[1]], "_",i, ".rds")
+      f <- paste0("/home/veronika/CPD/results/nperm_cusum/single_NOAA_LAI_cusum_nperm_", dim(perm_matrix)[[1]], "_",i, ".rds")
       saveRDS(r, file = f)
       cat("File saved for permutation ", i)
       return(r)
@@ -63,10 +63,10 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
               export = list(alpha_local = alpha_local,
                             null_distribution = null_distribution),
               n_jobs = 99,
-              template = list(job_name = "Tippet_test",
+              template = list(job_name = "cusum",
                               partition = "all",
-                              log_file = "logs/tippet_250n_25000mem_%a.txt",
-                              memory = 25000,
+                              log_file = "logs_cusum/cusum_250n_20000mem_%a.txt",
+                              memory = 20000,
                               n_cpus = 1),
               fail_on_error = FALSE,
               verbose = TRUE)

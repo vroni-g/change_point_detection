@@ -44,16 +44,16 @@ threshold_data<- function(perm_results, alpha_local, alpha_global, data_dim,
   out$stcs<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster) x %in% wh_cluster, wh_cluster)
 
   # using both stcs and maxT in stcs
-  stcs_thr<- quantile(perm_results$stcs, 1-alpha_global/2, na.rm = TRUE)
-  stcs_maxT_thr<- quantile(perm_results$stcs_maxT, 1-alpha_global/2, na.rm = TRUE)
-  wh_cluster_stcs<- which(tmp$clusters$cluster.count > stcs_thr)
-  stcs_maxT<- vector(length=length(tmp$clusters$cluster.count))
-  for (i in 1:length(tmp$clusters$cluster.count)) stcs_maxT[i]<- max(abs(data[tmp$clusters$clusters==i]), na.rm = TRUE)
-  wh_cluster_stcs_maxT<- which(stcs_maxT > stcs_maxT_thr)
-  wh_cluster_sel<- tmp$clusters$clusters %in% c(wh_cluster_stcs, wh_cluster_stcs_maxT)
-  out$stcs_maxT<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster)  x %in% wh_cluster, wh_cluster=unique(c(wh_cluster_stcs, wh_cluster_stcs_maxT)))
+  # stcs_thr<- quantile(perm_results$stcs, 1-alpha_global/2, na.rm = TRUE)
+  # stcs_maxT_thr<- quantile(perm_results$stcs_maxT, 1-alpha_global/2, na.rm = TRUE)
+  # wh_cluster_stcs<- which(tmp$clusters$cluster.count > stcs_thr)
+  # stcs_maxT<- vector(length=length(tmp$clusters$cluster.count))
+  # for (i in 1:length(tmp$clusters$cluster.count)) stcs_maxT[i]<- max(abs(data[tmp$clusters$clusters==i]), na.rm = TRUE)
+  # wh_cluster_stcs_maxT<- which(stcs_maxT > stcs_maxT_thr)
+  # wh_cluster_sel<- tmp$clusters$clusters %in% c(wh_cluster_stcs, wh_cluster_stcs_maxT)
+  # out$stcs_maxT<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster)  x %in% wh_cluster, wh_cluster=unique(c(wh_cluster_stcs, wh_cluster_stcs_maxT)))
 
-  # combining function of stcs and stcs_maxT_all
+  # tippet combining function (stcs and stcs_maxT_all/peak intensity)
   wt_thr <- quantile(perm_results$wt, 1-alpha_global, na.rm = TRUE)
   wh_cluster_wt <- which(perm_results$original_wt > wt_thr)
   out$Wt<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster_wt) x %in% wh_cluster_wt, wh_cluster_wt)
