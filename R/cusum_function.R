@@ -17,7 +17,7 @@ cusum_function<- function(x){
   s <- cusum_stat(xn)
 
   if(is.na(s)) return(NA)
-  if(rlang::is_empty(s)) return(NA)
+  #if(rlang::is_empty(s)) return(NA)
 
   return(s)
 }

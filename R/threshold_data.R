@@ -40,7 +40,7 @@ threshold_data<- function(perm_results, alpha_local, alpha_global, data_dim,
   tmp<- get_stcs(data=perm_results$original_results, alpha_local=alpha_local, null_distribution=null_distribution)
   stcs_thr<- quantile(perm_results$stcs, 1-alpha_global, na.rm = TRUE)
   wh_cluster<- which(tmp$clusters$cluster.count > stcs_thr)
-  wh_cluster_sel<- tmp$clusters$clusters %in% wh_cluster
+  #wh_cluster_sel<- tmp$clusters$clusters %in% wh_cluster
   out$stcs<- apply(tmp$clusters$clusters, 1:2, function(x, wh_cluster) x %in% wh_cluster, wh_cluster)
 
   # using both stcs and maxT in stcs

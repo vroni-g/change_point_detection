@@ -1,0 +1,51 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+During startup - Warning message:
+Setting LC_CTYPE failed, using "C" 
+> clustermq:::worker("tcp://edi:8332")
+2021-04-21 14:23:16.947361 | Master: tcp://edi:8332
+2021-04-21 14:23:17.437607 | WORKER_UP to: tcp://edi:8332
+Warning: namespace 'PerMuTe' is not available and has been replaced
+by .GlobalEnv when processing object '<unknown>'
+2021-04-21 14:28:12.174882 | > DO_SETUP (3.402s wait)
+2021-04-21 14:28:12.177064 | token from msg: ubhfb
+2021-04-21 14:28:12.207612 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Test for permutation  42  at  Wed Apr 21 14:28:18 2021 
+Test finished for permutation  42  at  Wed Apr 21 23:29:41 2021 
+Starting cluster derivation for permutation  42  at  Wed Apr 21 23:29:41 2021 
+Clusters derived completely for permutation  42  at  Thu Apr 22 02:00:01 2021 
+File saved for permutation  422021-04-22 02:00:03.240180 | completed 1 in 39159.16s [user], 2347.08s [system], 41511.03s [elapsed]
+2021-04-22 02:00:05.099379 | > DO_CHUNK (0.001s wait)
+Loading PerMuTe
+Starting Test for permutation  90  at  Thu Apr 22 02:00:07 2021 
+slurmstepd: error: *** JOB 41734 ON c4 CANCELLED AT 2021-04-22T07:07:55 ***

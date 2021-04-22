@@ -30,8 +30,7 @@ perm_dist<- function(data, fx, nperm=1000,
 
   maxT<- vector(length = nperm)
   stcs<- vector(length = nperm)
-  stcs_maxT<- vector(length = nperm)
-  stcs_maxT_all <- vector(length = nperm)
+  cluster_maxT <- vector(length = nperm)
   perm_results <- vector(length = nperm, mode = 'list') # save all cluster results to derive p-values for cluster
   cat("starting permutations:\n")
 
@@ -43,24 +42,24 @@ perm_dist<- function(data, fx, nperm=1000,
     perm_results[i] <- list(tmp_stcs$clusters)
     stcs[i]<- tmp_stcs$stcs
     stcs_maxT[i]<- tmp_stcs$stcs_maxT
-    stcs_maxT_all[i] <- tmp_stcs$stcs_maxT_all
+    cluster_maxT[i] <- tmp_stcs$cluster_maxT
     rm(tmp_stcs)
     if(verbose) if((i%%10)==0) cat(i,"\n")
   }
 
   # get empirical distribution of maxT_all and stcs
-  dis_maxT_all <- ecdf(stcs_maxT_all)
+  dis_maxT_all <- ecdf(cluster_maxT)
   dis_stcs<- ecdf(stcs)
 
   get_wt <- function(clust_perm, dis_maxT_all, dis_stcs, nperm, last = FALSE){
     # retrieve p-values for cluster size and cluster maximum for each cluster in the current permutation
     get_p <- function(j, clust_perm, dis_maxT_all, dis_stcs, nperm){
-      p_maxT_all <- 1 - dis_maxT_all(clust_perm$cluster.max[j]) + 1/nperm
-      if(p_maxT_all<=0) p_maxT_all <- 0.000001
+      p_cluster_maxT <- 1 - dis_maxT_all(clust_perm$cluster.max[j]) + 1/nperm
+      if(p_cluster_maxT<=0) p_cluster_maxT <- 0.000001
       p_stcs <- 1 - dis_stcs(clust_perm$cluster.count[j]) + 1/nperm
       if(p_stcs<=0) p_stcs <- 0.000001
       # combine in new test statistic
-      w <- 1 - min(log(p_maxT_all), log(p_stcs))
+      w <- 1 - min(log(p_cluster_maxT), log(p_stcs))
       if (is.finite(w)){
         return(w)
       } else{
@@ -88,6 +87,6 @@ perm_dist<- function(data, fx, nperm=1000,
   wt <- c(wt, l[[1]])
 
   cat("finished!\n\n")
-  return(list(maxT = maxT, stcs = stcs, wt = wt, stcs_maxT = stcs_maxT,stcs_maxT_all = stcs_maxT_all,
+  return(list(maxT = maxT, stcs = stcs, wt = wt, cluster_maxT = cluster_maxT,
               original_results = tmp, original_wt = l[[2]]), original_cluster = perm_results[[nperm]])
 }

@@ -1,0 +1,65 @@
+Lmod has detected the following error: The following module(s) are unknown:
+"byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Please check the spelling or version number. Also try "module spider ..."
+It is also possible your cache file is out-of-date; it may help to try:
+  $ module --ignore-cache load "byobu-5.127-gcc-9.2.0-by2qc2g"
+
+Also make sure that all modulefiles written in TCL start with the string
+#%Module
+
+
+
+
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+During startup - Warning message:
+Setting LC_CTYPE failed, using "C" 
+> clustermq:::worker("tcp://edi:8332")
+2021-04-21 14:23:08.804751 | Master: tcp://edi:8332
+2021-04-21 14:23:08.848556 | WORKER_UP to: tcp://edi:8332
+Warning: namespace 'PerMuTe' is not available and has been replaced
+by .GlobalEnv when processing object '<unknown>'
+2021-04-21 14:25:24.997780 | > DO_SETUP (1.431s wait)
+2021-04-21 14:25:25.047224 | token from msg: ubhfb
+2021-04-21 14:25:25.078170 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Test for permutation  6  at  Wed Apr 21 14:26:32 2021 
+Test finished for permutation  6  at  Wed Apr 21 18:06:02 2021 
+Starting cluster derivation for permutation  6  at  Wed Apr 21 18:06:02 2021 
+Clusters derived completely for permutation  6  at  Wed Apr 21 19:18:18 2021 
+File saved for permutation  62021-04-21 19:18:19.368366 | completed 1 in 15804.85s [user], 1654.74s [system], 17574.28s [elapsed]
+2021-04-21 19:18:20.730386 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Test for permutation  55  at  Wed Apr 21 19:18:21 2021 
+Test finished for permutation  55  at  Wed Apr 21 22:59:11 2021 
+Starting cluster derivation for permutation  55  at  Wed Apr 21 22:59:11 2021 
+Clusters derived completely for permutation  55  at  Wed Apr 21 23:21:51 2021 
+File saved for permutation  552021-04-21 23:21:52.483211 | completed 1 in 14045.14s [user], 542.96s [system], 14611.75s [elapsed]
+2021-04-21 23:21:53.822824 | > DO_CHUNK (0.000s wait)
+Loading PerMuTe
+Starting Test for permutation  67  at  Wed Apr 21 23:21:54 2021 
+Test finished for permutation  67  at  Thu Apr 22 02:59:05 2021 
+Starting cluster derivation for permutation  67  at  Thu Apr 22 02:59:05 2021 
+Clusters derived completely for permutation  67  at  Thu Apr 22 03:37:16 2021 
+File saved for permutation  672021-04-22 03:37:17.445868 | completed 1 in 14371.62s [user], 917.78s [system], 15323.62s [elapsed]
+2021-04-22 03:37:18.792167 | > DO_CHUNK (0.001s wait)
+Loading PerMuTe
+Starting Test for permutation  107  at  Thu Apr 22 03:37:20 2021 
+slurmstepd: error: *** JOB 41703 ON c0 CANCELLED AT 2021-04-22T07:07:55 ***
