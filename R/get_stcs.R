@@ -83,5 +83,5 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim, data_info=NU
   stcs_maxT_all <- max(allcluster_max, na.rm = TRUE) # get maximum of all cluster maxima regardless the cluster size
   if (!is.finite(stcs_maxT_all)) stcs_maxT_all <- 0
 
-  return(list(stcs=stcs, clusters=clusters_sep, stcs_maxT_all=stcs_maxT_all))#, stcs_maxT = stcs_maxT))
+  return(list(stcs=stcs, clusters=clusters_sep, stcs_maxT_all=stcs_maxT_all, original_stat = data))#, stcs_maxT = stcs_maxT))
 }
