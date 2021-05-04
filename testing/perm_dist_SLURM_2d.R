@@ -23,6 +23,9 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
                               alpha_local, alpha_global, null_distribution,
                               block_size = NULL, seed, verbose = TRUE){
 
+  # convert data to 2d matrix
+  data <- array_to_matrix(data)
+  
   perm_matrix<- perm_matrix(nobs = nrow(data$Y), nperm = nperm, block_size = block_size, seed = seed)
   cat("starting permutations:\n")
 
@@ -30,11 +33,17 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
     library(magrittr)
     devtools::load_all("/home/veronika/CPD/change_point_detection/")
     cat("Starting Test for permutation ", i, " at ", date(), "\n")
-    tmp<- apply(data$Y[perm_matrix[i,],], 2, fx)
+    tmp1<- apply(data$Y[perm_matrix[i,],], 2, fx)
     cat("Test finished for permutation ", i, " at ", date(), "\n")
-    maxT<- max(abs(tmp), na.rm = TRUE)
+    maxT<- max(abs(tmp1), na.rm = TRUE)
+    
+    # reinsert NA values
+    data_info <- data[2:5]
+    tmp <- matrix(NA, ncol = data_info$ncol, nrow = data_info$nrow)
+    tmp[data_info$wh.sel]<- tmp1
+    
     cat("Starting cluster derivation for permutation ", i, " at ", date(), "\n")
-    tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution, data_info = data[2:5])
+    tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution)
     cat("Clusters derived completely for permutation ", i, " at ", date(), "\n")
     stcs<- tmp_stcs$stcs
     #stcs_maxT<- tmp_stcs$stcs_maxT
@@ -62,10 +71,10 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
                            fx = fx),
               export = list(alpha_local = alpha_local,
                             null_distribution = null_distribution),
-              n_jobs = 70,
+              n_jobs = 60,
               template = list(job_name = "tippet_BU",
                               partition = "all",
-                              log_file = "/home/veronika/CPD/logs/MK_LTDR_1000n_70j_12000mem.txt",
+                              log_file = "/home/veronika/CPD/logs/MK_LTDR_400n_60j_12000mem.txt",
                               memory = 12000,
                               n_cpus = 1),
               fail_on_error = FALSE,

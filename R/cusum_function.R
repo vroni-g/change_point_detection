@@ -5,12 +5,12 @@
 #' removed from each grid cell time series ,x_t, so thatso that the new time
 #' series is y_t = x_t - rx_t-1
 #' @param x time series at a single grid cell
-#' @return recursive CUSUM test statistic, corrected for temporalautocorrelation
+#' @return recursive CUSUM test statistic, corrected for temporal autocorrelation
 #' @export cusum_function
 
 cusum_function<- function(x){
   if(any(is.na(x))) x<- x[!is.na(x)]
-  if(length(x)<8) return(NA)
+  #if(length(x)<8) return(NA)
 
   x <- x[is.finite(x)]
   xn <- (x[-1] - (x[-length(x)] * rk_fn(x)))

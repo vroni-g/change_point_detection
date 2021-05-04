@@ -13,7 +13,7 @@ null_distribution <- "normal"
 seed=NULL
 block_size=NULL
 verbose=TRUE
-nperm = 1000
+nperm = 400
 #nperm = 2
 
 
@@ -30,9 +30,8 @@ nperm = 1000
 ################################ LTDR data 2d ####################################
 
 data_lai <- readRDS("/home/veronika/CPD/data/10000int_LTDR_LAI_yearlymean_1981_2018.rds")
-data_lai_2d<- array_to_matrix(data_lai)
 
-res <- perm_dist_SLURM_2d(data=data_lai_2d, fx=fx, nperm=nperm, alpha_local=alpha_local,
+res <- perm_dist_SLURM_2d(data=data_lai, fx=fx, nperm=nperm, alpha_local=alpha_local,
                           alpha_global=alpha_global, null_distribution=null_distribution,
                           seed=NULL, block_size=NULL, verbose=TRUE)
 ################################ LTDR data 2d ####################################
