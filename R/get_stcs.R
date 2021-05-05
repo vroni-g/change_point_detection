@@ -68,6 +68,7 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim){
   library(magrittr)
   allcluster_max <- c()
   clusters_sep$cluster.max <- vector(length = length(clusters_pos$cluster.count))
+  # turn this into apply
   for (i in 1:length(clusters_sep$cluster.count)){ # retrieve maximum of each cluster
     clust_max <- data[clusters_sep$clusters==i] %>% abs %>%
       max(.,na.rm = TRUE)
