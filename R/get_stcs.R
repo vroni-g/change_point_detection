@@ -53,7 +53,7 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim){
 
   # join positive and negative clusters 
   clusters_neg$clusters[clusters_neg$clusters > 0]<- clusters_neg$clusters[clusters_neg$clusters > 0] + nclust_pos
-  if(clusters_neg$cluster.count>0){ # only join negative cluster if they exist to avoid cluster of size 0 and s-Inf values
+  if(clusters_neg$cluster.count[1]>0){ # only join negative cluster if they exist to avoid cluster of size 0 and s-Inf values
     clusters_sep[[1]]<- clusters_pos$clusters + clusters_neg$clusters
     clusters_sep[[2]]<- c(clusters_pos$cluster.count, clusters_neg$cluster.count)
   } else{

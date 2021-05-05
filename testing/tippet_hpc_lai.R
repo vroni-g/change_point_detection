@@ -13,7 +13,7 @@ null_distribution <- "normal"
 seed=NULL
 block_size=NULL
 verbose=TRUE
-nperm = 400
+nperm = 300
 #nperm = 2
 
 
