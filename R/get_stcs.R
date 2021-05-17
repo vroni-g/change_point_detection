@@ -13,7 +13,7 @@
 #' @import osc
 
 
-get_stcs<- function(data, alpha_local, null_distribution, data_dim){
+get_stcs<- function(data, alpha_local, null_distribution, data_dim, tippet=TRUE){
   if(null_distribution == "normal") thr<- qnorm(1-alpha_local/2)
   if(null_distribution == "t") thr<- qt(1-alpha_local/2, df = data_dim[3]-2)
   if(null_distribution == "brownian_motion"){ 
@@ -65,18 +65,25 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim){
 
   stcs<- max(clusters_sep$cluster.count, na.rm = TRUE)
   
-  library(magrittr)
-  allcluster_max <- c()
-  clusters_sep$cluster.max <- vector(length = length(clusters_pos$cluster.count))
-  # turn this into apply
-  for (i in 1:length(clusters_sep$cluster.count)){ # retrieve maximum of each cluster
-    clust_max <- data[clusters_sep$clusters==i] %>% abs %>%
-      max(.,na.rm = TRUE)
-    clusters_sep$cluster.max[i] <- clust_max # assign each cluster its maximum
-    allcluster_max <- c(allcluster_max, clust_max)
+  if(tippet){
+    
+    library(magrittr)
+    get_pi <- function(i, clusters_sep){
+      clust_max <- data[clusters_sep$clusters==i] %>% abs %>%
+        max(.,na.rm = TRUE)
+      return(clust_max)
+    }
+    # still takes quite long, not much faster than for loop
+    pis <- lapply(1:length(clusters_sep$cluster.count), get_pi, clusters_sep = clusters_sep) %>% 
+      unlist
+    clusters_sep$cluster.max <- pis
+    peak_intensity <- max(clusters_sep$cluster.max, na.rm = TRUE) # get maximum of all cluster maxima regardless the cluster size
+    if (!is.finite(peak_intensity)) peak_intensity <- 0
+    
+    return(list(stcs=stcs, clusters=clusters_sep, peak_intensity=peak_intensity, original_stat = data))
+    
+  } else {
+    return(list(stcs=stcs, clusters=clusters_sep, original_stat = data))
   }
-  peak_intensity <- max(allcluster_max, na.rm = TRUE) # get maximum of all cluster maxima regardless the cluster size
-  if (!is.finite(peak_intensity)) peak_intensity <- 0
-
-  return(list(stcs=stcs, clusters=clusters_sep, peak_intensity=peak_intensity, original_stat = data))#, stcs_maxT = stcs_maxT))
+  
 }

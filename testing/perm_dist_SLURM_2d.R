@@ -43,20 +43,19 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
     tmp[data_info$wh.sel]<- tmp1
     
     cat("Starting cluster derivation for permutation ", i, " at ", date(), "\n")
-    tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution)
+    tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution, tippet = TRUE)
     cat("Clusters derived completely for permutation ", i, " at ", date(), "\n")
     stcs<- tmp_stcs$stcs
-    #stcs_maxT<- tmp_stcs$stcs_maxT
-    stcs_maxT_all <- tmp_stcs$stcs_maxT_all
+    peak_intensity <- tmp_stcs$peak_intensity
     if(i==dim(perm_matrix)[[1]]){
-      r <- list(c(maxT = maxT, stcs = stcs,stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters, tmp_stcs$original_stat)
-      f <- paste0("/home/veronika/CPD/results/nperm_LTDR_MK/single_LTDR_LAI_MK_nperm_", dim(perm_matrix)[[1]],"_",i, ".rds")
+      r <- list(c(maxT = maxT, stcs = stcs,peak_intensity=peak_intensity), tmp_stcs$clusters, tmp_stcs$original_stat)
+      f <- paste0("/home/veronika/CPD/results/nperm_BU_CUSUM_loc10/single_BU_LAI_CUSUM_nperm_", dim(perm_matrix)[[1]],"_",i, ".rds")
       saveRDS(r, file = f)
       cat("File saved for permutation ", i)
       return(r)
     } else {
-      r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT_all=stcs_maxT_all), tmp_stcs$clusters)
-      f <- paste0("/home/veronika/CPD/results/nperm_LTDR_MK/single_LTDR_LAI_MK_nperm_", dim(perm_matrix)[[1]], "_",i, ".rds")
+      r <- list(c(maxT = maxT, stcs = stcs, peak_intensity=peak_intensity), tmp_stcs$clusters)
+      f <- paste0("/home/veronika/CPD/results/nperm_BU_CUSUM_loc10/single_BU_LAI_CUSUM_nperm_", dim(perm_matrix)[[1]], "_",i, ".rds")
       saveRDS(r, file = f)
       cat("File saved for permutation ", i)
       return(r)
@@ -71,10 +70,10 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
                            fx = fx),
               export = list(alpha_local = alpha_local,
                             null_distribution = null_distribution),
-              n_jobs = 60,
-              template = list(job_name = "tippet_BU",
+              n_jobs = 70,
+              template = list(job_name = "cusum_BU",
                               partition = "all",
-                              log_file = paste0("/home/veronika/CPD/logs/MK_LTDR_",nperm,"n_60j_12000mem.txt"),
+                              log_file = paste0("/home/veronika/CPD/logs/MK_CUSUM_",nperm,"n_70j_12000mem.txt"),
                               memory = 12000,
                               n_cpus = 1),
               fail_on_error = FALSE,
