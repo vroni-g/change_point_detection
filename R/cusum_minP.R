@@ -6,13 +6,13 @@
 #' @return Recursive residuals CUSUM test statistic
 #' @export cusum_stat
 
-cusum_stat <- function(x){
+cusum_pval <- function(x){
   res <- ts(x, frequency=1, start=c(1980)) %>%
     strucchange::efp(. ~ time(.), ., type = 'Rec-CUSUM') %>%
     strucchange::sctest()
-  if(rlang::is_empty(res$statistic)) return(NA)
-  if(is.na(res$statistic)) return(NA)
-  return(res$statistic)
+  if(rlang::is_empty(res$p.value)) return(NA)
+  if(is.na(res$p.value)) return(NA)
+  return(res$p.value)
 }
 
 #' This function is an example of a valid function as an input to the multiple
@@ -23,16 +23,16 @@ cusum_stat <- function(x){
 #' @return recursive CUSUM test statistic, corrected for temporal autocorrelation
 #' @export cusum_function
 
-cusum_function<- function(x){
+cusum_pval_function<- function(x){
   if(any(is.na(x))) x<- x[!is.na(x)]
   #if(length(x)<8) return(NA)
 
   x <- x[is.finite(x)]
   xn <- (x[-1] - (x[-length(x)] * rk_fn(x)))
-  s <- cusum_stat(xn)
+  p <- cusum_pval(xn)
 
-  if(is.na(s)) return(NA)
+  if(is.na(p)) return(NA)
   #if(rlang::is_empty(s)) return(NA)
 
-  return(s)
+  return(p)
 }

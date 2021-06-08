@@ -16,7 +16,7 @@
 get_stcs<- function(data, alpha_local, null_distribution, data_dim, tippet=TRUE){
   if(null_distribution == "normal") thr<- qnorm(1-alpha_local/2)
   if(null_distribution == "t") thr<- qt(1-alpha_local/2, df = data_dim[3]-2)
-  if(null_distribution == "brownian_motion"){ 
+  if(null_distribution == "brownian_motion"){  # for Recursive CUSUM
   # hard coded thresholds derived (experimentally) from implementation in 
   # strucchange package to obtain p values for empirical processes with limiting 
   # process brownian motion
@@ -27,9 +27,26 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim, tippet=TRUE)
     if(alpha_local == 0.025) thr <- 1.03651316
     if(alpha_local == 0.01) thr <- 1.142973511
   }
-
+  if(null_distribution == "brownian_bridge_increments"){ # for OLS-MOSUM
+    # if(alpha_local == 0.10) thr <- 1.0369799425 # for h = 0.12
+    # if(alpha_local == 0.05) thr <- 1.1113399926
+    # if(alpha_local == 0.025) thr <- 1.1809399861
+    # if(alpha_local == 0.01) thr <- 1.2639599731
+    if(alpha_local == 0.10) thr <- 1.338599926 # for h = 0.325
+    if(alpha_local == 0.05) thr <- 1.4618499877
+  }
+  if(null_distribution == "p-values"){
+    thr <- alpha_local
+  }
+  
   pixel_sign<- sign(data)
-  pixel_significant<- abs(data)>thr
+  
+  if(null_distribution == "p-values"){
+    pixel_significant<- abs(data)<thr
+  } else {
+    pixel_significant<- abs(data)>thr
+  }
+  
   pixel_result<- pixel_sign*pixel_significant
 
   # positive
@@ -64,26 +81,57 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim, tippet=TRUE)
   # clusters_sep is a matrix same size as data containing cluster ids (ints > 0) for cells of negative and positive clusters
 
   stcs<- max(clusters_sep$cluster.count, na.rm = TRUE)
+  stcs_idx <- which(clusters_sep$cluster.count==stcs)[1]
+  if(null_distribution == "p-values"){
+    stcs_minP <- min(data[clusters_sep$clusters==stcs_idx], na.rm = TRUE)
+  } else {
+    stcs_maxT <- max(data[clusters_sep$clusters==stcs_idx], na.rm = TRUE)
+  }
   
+  #******************* TIPPET *******************
   if(tippet){
-    
     library(magrittr)
-    get_pi <- function(i, clusters_sep){
-      clust_max <- data[clusters_sep$clusters==i] %>% abs %>%
-        max(.,na.rm = TRUE)
-      return(clust_max)
-    }
-    # still takes quite long, not much faster than for loop
-    pis <- lapply(1:length(clusters_sep$cluster.count), get_pi, clusters_sep = clusters_sep) %>% 
-      unlist
-    clusters_sep$cluster.max <- pis
-    peak_intensity <- max(clusters_sep$cluster.max, na.rm = TRUE) # get maximum of all cluster maxima regardless the cluster size
-    if (!is.finite(peak_intensity)) peak_intensity <- 0
     
-    return(list(stcs=stcs, clusters=clusters_sep, peak_intensity=peak_intensity, original_stat = data))
+    if(null_distribution == "p-values"){
+      get_pi <- function(i, clusters_sep){
+        clust_min <- data[clusters_sep$clusters==i] %>% abs %>%
+          min(.,na.rm = TRUE)
+        return(clust_min)
+      }
+      pis <- lapply(1:length(clusters_sep$cluster.count), get_pi, clusters_sep = clusters_sep) %>% 
+        unlist
+      clusters_sep$cluster.min <- pis
+      peak_intensity <- min(clusters_sep$cluster.min, na.rm = TRUE) # get minimum of all cluster minima regardless the cluster size
+      if (!is.finite(peak_intensity)) peak_intensity <- NA
+      
+      return(list(stcs=stcs, clusters=clusters_sep, peak_intensity=peak_intensity, 
+                  stcs_minP=stcs_minP, original_stat = data))
+      
+    } else {
+      get_pi <- function(i, clusters_sep){
+        clust_max <- data[clusters_sep$clusters==i] %>% abs %>%
+          max(.,na.rm = TRUE)
+        return(clust_max)
+      }
+      pis <- lapply(1:length(clusters_sep$cluster.count), get_pi, clusters_sep = clusters_sep) %>% 
+        unlist
+      clusters_sep$cluster.max <- pis
+      peak_intensity <- max(clusters_sep$cluster.max, na.rm = TRUE) # get maximum of all cluster maxima regardless the cluster size
+      if (!is.finite(peak_intensity)) peak_intensity <- NA
+      
+      return(list(stcs=stcs, clusters=clusters_sep, peak_intensity=peak_intensity,
+                  stcs_maxT=stcs_maxT, original_stat = data))
+    }
+  #******************* TIPPET *******************
+
     
   } else {
-    return(list(stcs=stcs, clusters=clusters_sep, original_stat = data))
+    
+    if(null_distribution == "p-values"){
+      return(list(stcs=stcs, stcs_minP = stcs_minP, clusters=clusters_sep, original_stat = data))
+    } else {
+      return(list(stcs=stcs, stcs_maxT = stcs_maxT, clusters=clusters_sep, original_stat = data))
+    }
   }
   
 }

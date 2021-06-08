@@ -25,6 +25,7 @@ perm_dist<- function(data, fx, nperm=1000,
 
   maxT<- vector(length = nperm)
   stcs<- vector(length = nperm)
+  stcs_maxT <- vector(length = nperm)
   peak_intensity <- vector(length = nperm)
   perm_results <- vector(length = nperm, mode = 'list') # save all cluster results to derive p-values for cluster
   cat("starting permutations:\n")
@@ -45,24 +46,30 @@ perm_dist<- function(data, fx, nperm=1000,
     tmp_stcs <- get_stcs(tmp, alpha_local, null_distribution)
     perm_results[i] <- list(tmp_stcs$clusters)
     stcs[i]<- tmp_stcs$stcs
+    stcs_maxT[i]<- tmp_stcs$stcs_maxT
     peak_intensity[i] <- tmp_stcs$peak_intensity
     rm(tmp_stcs)
     if(verbose) if((i%%10)==0) cat(i,"\n")
   }
 
   # get empirical distribution of maxT_all and stcs
-  dis_maxT_all <- ecdf(peak_intensity)
+  dis_peak_intensity <- ecdf(peak_intensity)
   dis_stcs<- ecdf(stcs)
+  dis_stcs_maxT<- ecdf(stcs_maxT)
 
-  get_wt <- function(clust_perm, dis_maxT_all, dis_stcs, nperm, last = FALSE){
+  get_wt <- function(clust_perm, dis_peak_intensity, dis_stcs, dis_stcs_maxT, nperm, last = FALSE){
     # retrieve p-values for cluster size and cluster maximum for each cluster in the current permutation
-    get_p <- function(j, clust_perm, dis_maxT_all, dis_stcs, nperm){
-      p_peak_intensity <- 1 - dis_maxT_all(clust_perm$cluster.max[j]) + 1/nperm
+    get_p <- function(j, clust_perm, dis_peak_intensity, dis_stcs, nperm){
+      p_peak_intensity <- 1 - dis_peak_intensity(clust_perm$cluster.max[j]) + 1/nperm
       if(p_peak_intensity<=0) p_peak_intensity <- 0.000001
       p_stcs <- 1 - dis_stcs(clust_perm$cluster.count[j]) + 1/nperm
       if(p_stcs<=0) p_stcs <- 0.000001
+      
+      p_stcs_maxT <- 1 - dis_stcs_maxT(clust_perm$cluster.max[j]) + 1/nperm
+      if(p_stcs_maxT<=0) p_stcs_maxT <- 0.000001
+      
       # combine in new test statistic
-      w <- 1 - min(log(p_peak_intensity), log(p_stcs))
+      w <- 1 - min(log(p_peak_intensity), log(p_stcs), log(p_stcs_maxT))
       if (is.finite(w)){
         return(w)
       } else{
@@ -71,7 +78,8 @@ perm_dist<- function(data, fx, nperm=1000,
     }
     js <- seq(1:length(clust_perm$cluster.count))
     # map over each cluster
-    w_tmp <- purrr::map(js, get_p, clust_perm = clust_perm, dis_maxT_all = dis_maxT_all, dis_stcs = dis_stcs, nperm = nperm)
+    w_tmp <- purrr::map(js, get_p, clust_perm = clust_perm, dis_peak_intensity = dis_peak_intensity, 
+                        dis_stcs = dis_stcs, dis_stcs_maxT = dis_stcs_maxT, nperm = nperm)
     # return maximum tippet value for current permutation
     if(last){
       return(list(max(unlist(w_tmp), na.rm = TRUE), unlist(w_tmp)))
@@ -81,10 +89,10 @@ perm_dist<- function(data, fx, nperm=1000,
   }
   # map over all permutations but the last one and retrieve each maximum tippet statistic
   wt <- purrr::map(perm_results[1:(nperm-1)], get_wt,
-                   dis_maxT_all = dis_maxT_all, dis_stcs = dis_stcs, nperm = nperm) %>%
+                   dis_peak_intensity = dis_peak_intensity, dis_stcs = dis_stcs, nperm = nperm) %>%
     unlist()
   # get values for last permutation and also return original tippet values
-  l <- get_wt(perm_results[[nperm]], dis_maxT_all = dis_maxT_all,
+  l <- get_wt(perm_results[[nperm]], dis_peak_intensity = dis_peak_intensity,
               dis_stcs = dis_stcs, last = TRUE, nperm = nperm)
   # append last maximum tippet value to the rest
   wt <- c(wt, l[[1]])

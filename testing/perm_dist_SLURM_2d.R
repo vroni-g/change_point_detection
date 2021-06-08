@@ -26,16 +26,20 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
   # convert data to 2d matrix
   data <- array_to_matrix(data)
   
-  perm_matrix<- perm_matrix(nobs = nrow(data$Y), nperm = nperm, block_size = block_size, seed = seed)
+  perm_mat<- perm_matrix(nobs = nrow(data$Y), nperm = nperm, block_size = block_size, seed = seed)
   cat("starting permutations:\n")
 
-  tmp_fn<- function(i, perm_matrix, fx, data){
+  tmp_fn<- function(i, perm_mat, fx, data){
     library(magrittr)
     devtools::load_all("/home/veronika/CPD/change_point_detection/")
     cat("Starting Test for permutation ", i, " at ", date(), "\n")
-    tmp1<- apply(data$Y[perm_matrix[i,],], 2, fx)
+    tmp1<- apply(data$Y[perm_mat[i,],], 2, fx)
     cat("Test finished for permutation ", i, " at ", date(), "\n")
-    maxT<- max(abs(tmp1), na.rm = TRUE)
+    if(null_distribution == "p-values"){
+      minP <- min(abs(tmp1), na.rm = TRUE)
+    } else{
+      maxT<- max(abs(tmp1), na.rm = TRUE)
+    }
     
     # reinsert NA values
     data_info <- data[2:5]
@@ -46,35 +50,62 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
     tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution, tippet = TRUE)
     cat("Clusters derived completely for permutation ", i, " at ", date(), "\n")
     stcs<- tmp_stcs$stcs
-    peak_intensity <- tmp_stcs$peak_intensity
-    if(i==dim(perm_matrix)[[1]]){
-      r <- list(c(maxT = maxT, stcs = stcs,peak_intensity=peak_intensity), tmp_stcs$clusters, tmp_stcs$original_stat)
-      f <- paste0("/home/veronika/CPD/results/nperm_BU_CUSUM_loc10/single_BU_LAI_CUSUM_nperm_", dim(perm_matrix)[[1]],"_",i, ".rds")
-      saveRDS(r, file = f)
-      cat("File saved for permutation ", i)
-      return(r)
-    } else {
-      r <- list(c(maxT = maxT, stcs = stcs, peak_intensity=peak_intensity), tmp_stcs$clusters)
-      f <- paste0("/home/veronika/CPD/results/nperm_BU_CUSUM_loc10/single_BU_LAI_CUSUM_nperm_", dim(perm_matrix)[[1]], "_",i, ".rds")
-      saveRDS(r, file = f)
-      cat("File saved for permutation ", i)
-      return(r)
+    if(null_distribution == "p-values"){
+      stcs_minP <- tmp_stcs$stcs_minP
+    }else{
+      stcs_maxT <- tmp_stcs$stcs_maxT
     }
+    
+    peak_intensity <- tmp_stcs$peak_intensity
+    
+    if(null_distribution == "p-values"){
+      
+      if(i==dim(perm_mat)[[1]]){
+        r <- list(c(minP = minP, stcs = stcs, stcs_minP = stcs_minP, peak_intensity=peak_intensity), tmp_stcs$clusters, tmp_stcs$original_stat)
+        f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10_h0.325/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]],"_",i, ".rds")
+        saveRDS(r, file = f)
+        cat("File saved for permutation ", i)
+        return(r)
+      } else {
+        r <- list(c(minP = minP, stcs = stcs, stcs_minP = stcs_minP, peak_intensity=peak_intensity), tmp_stcs$clusters)
+        f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10_h0.325/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]], "_",i, ".rds")
+        saveRDS(r, file = f)
+        cat("File saved for permutation ", i)
+        return(r)
+      }
+      
+    }else{
+      
+      if(i==dim(perm_mat)[[1]]){
+        r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, peak_intensity=peak_intensity), tmp_stcs$clusters, tmp_stcs$original_stat)
+        f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]],"_",i, ".rds")
+        saveRDS(r, file = f)
+        cat("File saved for permutation ", i)
+        return(r)
+      } else {
+        r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, peak_intensity=peak_intensity), tmp_stcs$clusters)
+        f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]], "_",i, ".rds")
+        saveRDS(r, file = f)
+        cat("File saved for permutation ", i)
+        return(r)
+      }
+    }
+
   }
 
   library(clustermq)
   results<- Q(tmp_fn,
               i=1:nperm,
-              const = list(perm_matrix = perm_matrix,
+              const = list(perm_mat = perm_mat,
                            data = data,
                            fx = fx),
               export = list(alpha_local = alpha_local,
                             null_distribution = null_distribution),
-              n_jobs = 70,
-              template = list(job_name = "cusum_BU",
+              n_jobs = 75,
+              template = list(job_name = "mosum_BU",
                               partition = "all",
-                              log_file = paste0("/home/veronika/CPD/logs/MK_CUSUM_",nperm,"n_70j_12000mem.txt"),
-                              memory = 12000,
+                              log_file = paste0("/home/veronika/CPD/logs/BU_MOSUM_",nperm,"n_75j_10000mem.txt"),
+                              memory = 10000,
                               n_cpus = 1),
               fail_on_error = FALSE,
               verbose = TRUE)
