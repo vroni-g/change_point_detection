@@ -16,6 +16,7 @@
 get_stcs<- function(data, alpha_local, null_distribution, data_dim, tippet=TRUE){
   if(null_distribution == "normal") thr<- qnorm(1-alpha_local/2)
   if(null_distribution == "t") thr<- qt(1-alpha_local/2, df = data_dim[3]-2)
+  
   if(null_distribution == "brownian_motion"){  # for Recursive CUSUM
   # hard coded thresholds derived (experimentally) from implementation in 
   # strucchange package to obtain p values for empirical processes with limiting 
@@ -27,13 +28,13 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim, tippet=TRUE)
     if(alpha_local == 0.025) thr <- 1.03651316
     if(alpha_local == 0.01) thr <- 1.142973511
   }
-  if(null_distribution == "brownian_bridge_increments"){ # for OLS-MOSUM
-    # if(alpha_local == 0.10) thr <- 1.0369799425 # for h = 0.12
-    # if(alpha_local == 0.05) thr <- 1.1113399926
-    # if(alpha_local == 0.025) thr <- 1.1809399861
-    # if(alpha_local == 0.01) thr <- 1.2639599731
-    if(alpha_local == 0.10) thr <- 1.338599926 # for h = 0.325
-    if(alpha_local == 0.05) thr <- 1.4618499877
+  # if(null_distribution == "brownian_bridge_increments"){ # for OLS-MOSUM
+  #   # if(alpha_local == 0.10) thr <- 1.0369799425 # for h = 0.12
+  #   # if(alpha_local == 0.05) thr <- 1.1113399926
+  #   # if(alpha_local == 0.025) thr <- 1.1809399861
+  #   # if(alpha_local == 0.01) thr <- 1.2639599731
+  #   if(alpha_local == 0.10) thr <- 1.338599926 # for h = 0.325
+  #   if(alpha_local == 0.05) thr <- 1.4618499877
   }
   if(null_distribution == "p-values"){
     thr <- alpha_local
@@ -88,7 +89,8 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim, tippet=TRUE)
     stcs_maxT <- max(data[clusters_sep$clusters==stcs_idx], na.rm = TRUE)
   }
   
-  #******************* TIPPET *******************
+  #********************************* TIPPET ************************************
+  
   if(tippet){
     library(magrittr)
     
@@ -122,10 +124,11 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim, tippet=TRUE)
       return(list(stcs=stcs, clusters=clusters_sep, peak_intensity=peak_intensity,
                   stcs_maxT=stcs_maxT, original_stat = data))
     }
-  #******************* TIPPET *******************
+    
+    #******************************* TIPPET END ********************************
 
     
-  } else {
+  } else { # no tippet (saves usually quite some time as cluster mins/max don't have to be derived)
     
     if(null_distribution == "p-values"){
       return(list(stcs=stcs, stcs_minP = stcs_minP, clusters=clusters_sep, original_stat = data))

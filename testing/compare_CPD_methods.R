@@ -4,7 +4,40 @@
 # at alpha = 0.0.5
 #**************************
 library(tidyverse)
-n <- 10000
+n <- 1000
+
+
+# wbsts package ----
+#*********************************************************************
+library(wbsts)
+source("/home/veronika/CPD/rumprobieren/adjusted_wbs.R")
+d <- ts(rnorm(38,12000,1500), frequency=1, start=1)
+res <- wbs.lsw(d)
+
+hits <- 0
+
+for (i in 1:n) {
+    d <- ts(rnorm(400,12000,1500), frequency=1, start=1)
+    res <- wbs.lsw(d)
+    if(!is.null(res$cp.aft)){
+      hits <- hits + 1
+    }
+  }
+
+fpr <- hits/n
+cat(paste('False positive rate for wild binary segmentation test is: ', fpr))
+
+# hat auch irgendwie probleme mit kurzen zeitreihen... wobei kommt auch bis 300 n
+# Error in if (cbr[i + 2] == nz) { : missing value where TRUE/FALSE needed
+# nz ist immer die länge der zeitreihe
+
+d <- ts(rnorm(38,12000,1500), frequency=1, start=1)
+z <- ews.trans(d)
+nz <- dim(z)[1]
+fbr<-NULL
+cbr<-c(0, fbr, nz)
+i <- 1:B # whereas B is the length of unprocessed change points vector
+cbr[i+2]
 
 # strucchange package ----
 #*********************************************************************
@@ -15,8 +48,8 @@ library(strucchange)
 test_CPD_efp <- function(n, fun, h = NULL){
   p <- c()
   for (i in 1:n) {
-    d <- ts(rnorm(12*20,0,.2), frequency=12, start=c(2000,1))
-    temp <- efp(d ~ 1, d, type = fun, h = h, rescale = TRUE)
+    d <- ts(rnorm(38,12000,1500), frequency=1, start=1)
+    temp <- efp(d ~ time(d), d, type = fun, h = h, rescale = TRUE)
     res <-  sctest(temp)
     p <- c(p, res$p.value)
   }
@@ -26,9 +59,9 @@ test_CPD_efp <- function(n, fun, h = NULL){
 }
 
 # residual based:
-rec_cusum <- test_CPD_efp(n, 'Rec-CUSUM') # fpr: 0.0472, 0.0426, 0.0433, 0.0442
-ols_cusum <- test_CPD_efp(n, 'OLS-CUSUM') # fpr: 0.0426, 0.0396, 0.0406
-score_cusum <- test_CPD_efp(n, 'Score-CUSUM') #  fpr: 0.0358, 0.0401
+rec_cusum <- test_CPD_efp(n, 'Rec-CUSUM') # fpr: 0.0472, 0.046, 0.035, 0.049, smaller time series: 0.038, 0.027, 0.023
+ols_cusum <- test_CPD_efp(n, 'OLS-CUSUM') # fpr: 0, 0, 0
+score_cusum <- test_CPD_efp(n, 'Score-CUSUM') #  fpr: 0.017, 0.012, 0.013
 # different window sizes (performance of certain window size is probably data specific)
 h <- c(0.01, 0.05, 0.1, 0.2, 0.3)
 
@@ -51,31 +84,46 @@ mov_estimates <- test_CPD_efp(n, 'ME', h = 0.05) # fpr: 0.023, 0.0254
 
 # Generalized M-Fluctuation Tests
 #************
+library(MASS)
 p_LM <- c()
 p_maxmo <- c()
+p_bb <- c()
+p_meanbb <- c()
+n <- 1000
 
+# look again closer into this with glm possibly and decorrelation??!
 for (i in 1:n) {
-  d <- ts(rnorm(12*20,0,.2), frequency=12, start=c(2000,1))
-  temp <- gefp(d ~ 1, fit = lm)
+  d <- ts(rnorm(38,12000,1500), frequency=1, start=1)
+  temp <- gefp(d ~ time(d), fit = rlm)
   res_LM <- sctest(temp, functional = supLM(0.05))
   p_LM <- c(p_LM, res_LM$p.value)
   res_maxmo <- sctest(temp, functional = maxMOSUM(width = 0.05))
   p_maxmo <- c(p_maxmo, res_maxmo$p.value)
+  res_BB <- sctest(temp, functional =rangeBB)
+  p_bb <- c(p_bb,res_BB$p.value)
+  res_meanBB <- sctest(temp, functional =meanL2BB)
+  p_meanbb <- c(p_meanbb,res_meanBB$p.value)
+
 }
-fpr_LM <- sum(p_LM<0.05)/n # fpr: 0.0412, 0.0403
+fpr_LM <- sum(p_LM<0.05)/n # fpr: 0.239, 0.235, 0.221, smaller time series: 0.168, 0.194, 0.159
 cat(paste('False positive rate for supLM is: ', fpr_LM))
-fpr_maxmo <- sum(p_maxmo<0.05)/n # fpr: 0.02, 0.0233
+fpr_maxmo <- sum(p_maxmo<0.05)/n # fpr: 0.123, 0.124, 0.141, smaller ts: 0.002, 0, 0
 cat(paste('False positive rate for maximum MOSUM is: ', fpr_maxmo))
+fpr_bb <- sum(p_bb<0.05)/n # fpr: 0.004, 0.001, 0.003; similar for lm, glm an rlm
+cat(paste('False positive rate for BB is: ', fpr_bb))
+fpr_meanbb <- sum(p_meanbb<0.05)/n # fpr:  0.011, 0.005, 0.013; similar for lm, glm an rlm
+cat(paste('False positive rate for meanbb is: ', fpr_meanbb))
 
 
 # F Statistics (compares model fits for whole series vs. two segments; iterates over whole series as possible break points)
 #************
+n <- 1000
 p_sup <- c()
 p_exp <- c()
 p_ave <- c()
 for (i in 1:n) {
-  d <- ts(rnorm(12*20,0,.2), frequency=12, start=c(2000,1))
-  temp <- Fstats(d ~ 1)
+  d <- ts(rnorm(38,12000,1500), frequency=1, start=1)
+  temp <- Fstats(d ~ time(d))
   res_sup <- sctest(temp, type = 'supF')
   p_sup <- c(p_sup, res_sup$p.value)
   res_exp <- sctest(temp, type = 'expF')
@@ -83,11 +131,11 @@ for (i in 1:n) {
   res_ave <- sctest(temp, type = 'aveF')
   p_ave <- c(p_ave, res_ave$p.value)
 }
-fpr_sup <- sum(p_sup<0.05)/n # fpr: 0.0518, 0.0458
+fpr_sup <- sum(p_sup<0.05)/n # fpr: 0.07, 0.095, 0.086, 0.0808
 cat(paste('False positive rate for supF is: ', fpr_sup))
-fpr_exp <- sum(p_exp<0.05)/n # fpr: 0.0554, 0.0491
+fpr_exp <- sum(p_exp<0.05)/n # fpr: 0.073, 0.108, 0.087, 0.0906
 cat(paste('False positive rate for expF is: ', fpr_exp))
-fpr_ave <- sum(p_ave<0.05)/n # fpr: 0.051, 0.0493
+fpr_ave <- sum(p_ave<0.05)/n # fpr: 0.056, 0.08, 0.05, 0.0587
 cat(paste('False positive rate for aveF is: ', fpr_ave))
 
 
@@ -98,7 +146,7 @@ library(changepoint)
 
 fpr_mean <- c()
 for (i in 1:n) {
-  d <- ts(rnorm(12*20,0,.2), frequency=12, start=c(2000,1))
+  d <- ts(rnorm(38,12000,1500), frequency=1, start=1)
   res <- cpt.mean(d, penalty = "Asymptotic", pen.value = 0.05, method = "AMOC",
                      test.stat = "Normal", class = FALSE)
   # in documentation says that it results in NA if no changepoint but it often
@@ -137,13 +185,30 @@ library(trend)
 
 p <- c()
 for (i in 1:n) {
-  d <- ts(rnorm(12*20,0,.2), frequency=12, start=c(2000,1))
+  d <- ts(rnorm(38,0,4), frequency=1, start=1)
   res <- pettitt.test(d)
   p <- c(p, res$p.value)
 }
 fpr <- sum(p<0.05)/n
 cat(paste('False positive rate for pettitts test is: ', fpr))
 # fpr: 0.0428, 0.0403
+# shorter ts: 0.0273, 0.0251, 0.0231
+
+# MCUSUM (Lyubchich2020, funtimes package) ----
+#*********************************************************************
+library(funtimes)
+n <- 100
+p <- c()
+for (i in 1:n) {
+  d <- ts(rnorm(38,0,4), frequency=1, start=1)
+  ehat <- lm(d ~ time(d))$resid
+  res <- mcusum_test(ehat, k = c(18))
+  p <- c(p, res$p.value)
+}
+fpr <- sum(p<0.05)/n
+cat(paste('False positive rate for modified cusum test is: ', fpr))
+
+
 
 # cpm package ----
 #*********************************************************************
