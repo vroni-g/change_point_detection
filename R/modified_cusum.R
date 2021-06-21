@@ -169,12 +169,12 @@ mcusum <- function(e, k, m = length(k),
 #' @return p-value of the chosen change point location, if loc = T a vector containing the p-value and the location
 #' @export mcusum_function
 
-mcusum_function <- function(x, t, m, B=500, loc = F){
+mcusum_function <- function(x, loc = F){
   library(funtimes)
   if(any(is.na(x))) return(NA)
   d <- ts(x)
   ehat <- lm(d ~ time(d))$resid # get the residuals
-  res <- mcusum(ehat, m = m, shortboot = T, k = seq(t[1],t[2],by=1), B=B)
+  res <- mcusum(ehat, m = 1, shortboot = T, k = c(4:34), B=500)
   if(loc){
     return(c(res$p.value, res$estimate$khat))
   } else {

@@ -25,27 +25,43 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
 
   # convert data to 2d matrix
   data <- array_to_matrix(data)
-  
+
   perm_mat<- perm_matrix(nobs = nrow(data$Y), nperm = nperm, block_size = block_size, seed = seed)
   cat("starting permutations:\n")
 
   tmp_fn<- function(i, perm_mat, fx, data){
     library(magrittr)
     devtools::load_all("/home/veronika/CPD/change_point_detection/")
-    cat("Starting Test for permutation ", i, " at ", date(), "\n")
-    tmp1<- apply(data$Y[perm_mat[i,],], 2, fx)
-    cat("Test finished for permutation ", i, " at ", date(), "\n")
-    if(null_distribution == "p-values"){
-      minP <- min(abs(tmp1), na.rm = TRUE)
-    } else{
-      maxT<- max(abs(tmp1), na.rm = TRUE)
-    }
-    
-    # reinsert NA values
     data_info <- data[2:5]
     tmp <- matrix(NA, ncol = data_info$ncol, nrow = data_info$nrow)
-    tmp[data_info$wh.sel]<- tmp1
-    
+
+    if(i==dim(perm_mat)[[1]]){ # for last permutation also retrieve change point locations
+
+      cat("Starting Test for permutation ", i, " at ", date(), "\n")
+      tmp1<- apply(data$Y[perm_mat[i,],], 2, fx, loc = T) # adjusted this for change point detection with mcusum, does not apply to other functions
+      cat("Test finished for permutation ", i, " at ", date(), "\n")
+
+      # reinsert NA values
+      tmp[data_info$wh.sel]<- tmp1[1,]
+
+      locs <- matrix(NA, ncol = data_info$ncol, nrow = data_info$nrow)
+      locs[data_info$wh.sel]<- tmp1[2,]
+
+    } else {
+      cat("Starting Test for permutation ", i, " at ", date(), "\n")
+      tmp1<- apply(data$Y[perm_mat[i,],], 2, fx)
+      cat("Test finished for permutation ", i, " at ", date(), "\n")
+
+      if(null_distribution == "p-values"){
+        minP <- min(abs(tmp1), na.rm = TRUE)
+      } else{
+        maxT<- max(abs(tmp1), na.rm = TRUE)
+      }
+
+      # reinsert NA values
+      tmp[data_info$wh.sel]<- tmp1
+    }
+
     cat("Starting cluster derivation for permutation ", i, " at ", date(), "\n")
     tmp_stcs<- get_stcs(tmp, alpha_local, null_distribution, tippet = TRUE)
     cat("Clusters derived completely for permutation ", i, " at ", date(), "\n")
@@ -55,37 +71,37 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
     }else{
       stcs_maxT <- tmp_stcs$stcs_maxT
     }
-    
+
     peak_intensity <- tmp_stcs$peak_intensity
-    
+
     if(null_distribution == "p-values"){
-      
+
       if(i==dim(perm_mat)[[1]]){
-        r <- list(c(minP = minP, stcs = stcs, stcs_minP = stcs_minP, peak_intensity=peak_intensity), tmp_stcs$clusters, tmp_stcs$original_stat)
-        f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10_h0.325/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]],"_",i, ".rds")
+        r <- list(c(minP = minP, stcs = stcs, stcs_minP = stcs_minP, peak_intensity=peak_intensity), tmp_stcs$clusters, tmp_stcs$original_stat, locs)
+        f <- paste0("/home/veronika/CPD/results/nperm_BU_MCUSUM_loc10/single_BU_LAI_MCUSUM_nperm_", dim(perm_mat)[[1]],"_",i, ".rds")
         saveRDS(r, file = f)
         cat("File saved for permutation ", i)
         return(r)
       } else {
         r <- list(c(minP = minP, stcs = stcs, stcs_minP = stcs_minP, peak_intensity=peak_intensity), tmp_stcs$clusters)
-        f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10_h0.325/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]], "_",i, ".rds")
+        f <- paste0("/home/veronika/CPD/results/nperm_BU_MCUSUM_loc10/single_BU_LAI_MCUSUM_nperm_", dim(perm_mat)[[1]], "_",i, ".rds")
         saveRDS(r, file = f)
         cat("File saved for permutation ", i)
         return(r)
       }
-      
+
     }else{
-      
+
       if(i==dim(perm_mat)[[1]]){
         r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, peak_intensity=peak_intensity), tmp_stcs$clusters, tmp_stcs$original_stat)
-        f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]],"_",i, ".rds")
-        saveRDS(r, file = f)
+        #f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]],"_",i, ".rds")
+        #saveRDS(r, file = f)
         cat("File saved for permutation ", i)
         return(r)
       } else {
         r <- list(c(maxT = maxT, stcs = stcs, stcs_maxT = stcs_maxT, peak_intensity=peak_intensity), tmp_stcs$clusters)
-        f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]], "_",i, ".rds")
-        saveRDS(r, file = f)
+        #f <- paste0("/home/veronika/CPD/results/nperm_BU_MOSUM_loc10/single_BU_LAI_MOSUM_nperm_", dim(perm_mat)[[1]], "_",i, ".rds")
+        #saveRDS(r, file = f)
         cat("File saved for permutation ", i)
         return(r)
       }
@@ -101,15 +117,15 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
                            fx = fx),
               export = list(alpha_local = alpha_local,
                             null_distribution = null_distribution),
-              n_jobs = 75,
-              template = list(job_name = "mosum_BU",
+              n_jobs = 4,
+              template = list(job_name = "Mcusum_BU",
                               partition = "all",
-                              log_file = paste0("/home/veronika/CPD/logs/BU_MOSUM_",nperm,"n_75j_10000mem.txt"),
+                              log_file = paste0("/home/veronika/CPD/logs/BU_MCUSUM_",nperm,"n_4j_10000mem.txt"),
                               memory = 10000,
                               n_cpus = 1),
               fail_on_error = FALSE,
               verbose = TRUE)
-
+}
   # library(tidyverse)
   # library(magrittr)
   # q_results <- lapply(results, function(x) x[[1]]) %>%
@@ -119,11 +135,11 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
   # # extract original statistic values
   # original_stat <- results[[nperm]][[3]]
   # rm(results)
-  # 
+  #
   # res <- list(q_results, perm_results, original_stat)
   # return(res)
 
-  
+
 #   # get empirical distribution of maxT_all and stcs
 #   dis_maxT_all <- ecdf(q_results[,3])
 #   dis_stcs<- ecdf(q_results[,2])
@@ -166,7 +182,7 @@ perm_dist_SLURM_2d<- function(data, fx, nperm=1000,
 #   cat("finished!\n\n")
 #   return(list(maxT = q_results[,1], stcs = q_results[,2], stcs_maxT = q_results[,3], wt = wt, original_wt = l[[2]],
 #               original_cluster = perm_results[[nperm]], original_stat = original_stat))
-}
+
 
 
 
