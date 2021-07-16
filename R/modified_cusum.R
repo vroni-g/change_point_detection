@@ -1,5 +1,6 @@
 library("funtimes")
 library("compiler")
+library(osc)
 
 Mfun <- function(e, k) {
   T <- length(e)
@@ -122,7 +123,7 @@ mcusum <- function(e, k, m = length(k),
                  k = k, m = m)$MT
         )
         MTboot <- c(MTboot, MTboot2)
-        pval <- mean(MTboot >= MTobs$MT)
+        pval <- mean(MTboot >= MTobs$MT)+1/B
       } else {
         pval <- 999
       }
@@ -133,7 +134,7 @@ mcusum <- function(e, k, m = length(k),
                                    innov = sample(e, size = T, replace = TRUE))),
                k = k, m = m)$MT
       )
-      pval <- mean(MTboot >= MTobs$MT)
+      pval <- mean(MTboot >= MTobs$MT)+1/B
     }
 
 
@@ -171,6 +172,7 @@ mcusum <- function(e, k, m = length(k),
 
 mcusum_function <- function(x, loc = F){
   library(funtimes)
+  library(osc)
   if(any(is.na(x))) return(NA)
   d <- ts(x)
   ehat <- lm(d ~ time(d))$resid # get the residuals

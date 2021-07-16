@@ -44,11 +44,13 @@ get_stcs<- function(data, alpha_local, null_distribution, data_dim, tippet=TRUE)
 
   if(null_distribution == "p-values"){
     pixel_significant<- abs(data)<thr
+    pixel_result<- 1*pixel_significant
   } else {
     pixel_significant<- abs(data)>thr
+    pixel_result<- pixel_sign*pixel_significant
   }
 
-  pixel_result<- pixel_sign*pixel_significant
+
 
   # positive
   pixel_result_pos<- pixel_result
