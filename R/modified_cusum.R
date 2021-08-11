@@ -178,7 +178,7 @@ mcusum_function <- function(x, loc = F){
   ehat <- lm(d ~ time(d))$resid # get the residuals
   res <- mcusum(ehat, m = 1, shortboot = T, k = c(4:34), B=500)
   if(loc){
-    return(c(res$p.value, res$estimate$khat))
+    return(c(res$p.value, res$estimate$khat, res$estimate$AR_order))
   } else {
     return(res$p.value)
   }
