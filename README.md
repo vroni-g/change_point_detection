@@ -70,7 +70,8 @@ LAI data, for each pixel it delivers the percentage of time points with quality 
 ### monotonic_trend
 
 Scripts:
-*`parallel_MK_TCF_2d.R`: this script was provided by José Cortés and slightly modified,
+
+* `parallel_MK_TCF_2d.R`: this script was provided by José Cortés and slightly modified,
 it implements the permutation procedure in parallelized fashion with the `clustermq` R-package 
 for use with SLURM and the HPC facilities in Jena
 * `hpc_MK_TCF.R`: this script calls `parallel_MK_TCF_2d.R` and is the go-to script 
