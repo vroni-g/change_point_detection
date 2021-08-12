@@ -13,7 +13,7 @@ results are stored. Below each script in the subfolders will be described shortl
 Scripts starting with `FIG_[...].R` contain code to produce the figures used in 
 my thesis. `BU` is the abbreviation for the Boston University Gimms3g LAI dataset 
 used in the analysis (see Zhu et al. 2013 (https://doi.org/10.3390/rs5020927),
-Chen et al. 2019 (https://doi.org/10.1038/s41893-019-0220-7)).
+Chen et al. 2019 (https://doi.org/10.1038/s41893-019-0220-7)). I mainly used R version 4.1.0.
 
 Not for all scripts the needed input data is available in this repository as
 file size was too big. Those scripts include a note at the top. For example the 
