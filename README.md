@@ -27,7 +27,7 @@ repository can be immediately reproduced. For further information and questions 
 
 ## Modifications to PerMuTe
 
-The following additions have been made to José Cortés code:
+The following additions have been made to José Cortés code (https://github.com/jcortesr/PerMuTe):
 
 * `array_to_matrix.R`: has been added by Josè Cortés to convert the 3d data matrix
 to a 2d one for faster and easier computation
