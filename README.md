@@ -134,7 +134,7 @@ Kendall trend test
 pixel and vector of indices of significant clusters with manual combination
 
 
-### other_analyses
+### other
 
 Scripts:
 * `compare_fpr_CPD_methods.R`: simulation to derive experimental false positive
@@ -144,3 +144,12 @@ rate of different change point detection methods
 breakpoint data with changing magnitude of change and differing time points of change
 * `FIG_MCUSUM_power_sims.R`: creates figures of `MCUSUM_power_sims.R` results to
 show power changes with changing magnitude and differing time points of change
+* `FIG_breakpoint_types.R`: creates a figure of different breakpoint types with artificial time series, 
+composed of significant greening or browning segments as well as non-significant,
+i.e. stable segments
+* `FIG_change_types.R`: creates a figure of different change types with artificial time series,
+shows changes in variance, mean, intercept and slope 
+* `FIG_FWER_binomial.R`: creates a plot of Family Wise Error Rate by number of 
+independent simultaneous tests in a multiple testing setting
+* `FIG_misuses_plot.R`: creates a figure to show possible pitfalls in change point
+detection in presence of spatial autocorrelation (replicate plot of Beaulieu et al. 2018 p.9521)
