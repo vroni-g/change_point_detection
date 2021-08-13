@@ -189,19 +189,21 @@ fpr <- sum(p<0.05)/n
 cat(paste('False positive rate for pettitts test is: ', fpr))
 # fpr:  0.0273, 0.0251, 0.0231
 
-# MCUSUM (Lyubchich2020, funtimes package) ----
+# MCUSUM (Lyubchich2020, funtimes package) with our modifications----
 #*********************************************************************
-library(funtimes)
-n <- 100
+devtools::load_all()
 p <- c()
 for (i in 1:n) {
   d <- ts(rnorm(38,0,4), frequency=1, start=1)
-  ehat <- lm(d ~ time(d))$resid
-  res <- mcusum_test(ehat, k = c(18))
-  p <- c(p, res$p.value)
+  #d <- 2*c(1:38) + 4 + rnorm(n=38, mean=0, sd=20)
+  ehat <- lm(d ~ time(d))[["residuals"]]
+  res <- mcusum_function(ehat)
+  p <- c(p, res)
 }
 fpr <- sum(p<0.05)/n
-cat(paste('False positive rate for modified cusum test is: ', fpr))
+cat(paste('False positive rate for modified cusum test is: ', fpr)) 
+# 0 for random data
+# 0-0.002 for random data with trend (0.002 with sd = 10, 0 for sd = 20 and sd = 30)
 
 
 
