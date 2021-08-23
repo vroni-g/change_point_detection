@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Master Thesis: "Correcting for Multiple Testing in Change Point Detection 
+# Master Thesis: "Correcting for Multiple Testing in Change Point Detection
 #  of Global Vegetation Trends"
 #*******************************************************************************
 # Veronika Grupp, M.Sc. Geoinformatics and Remote Sensing, FSU Jena, 2021
@@ -17,6 +17,14 @@
 
 slopes_df <- readRDS("master_thesis/results/sig_mq_df.rds")
 
+# make histogram of change point timing estimates
+pdf_fn <- "MCUSUM_bp_timing_hist.pdf"
+pdf(pdf_fn, height=8, width=11)
+hist(slopes_df$bpl_year,breaks = 35, xlab = "Frequency", ylab = "Year of Change Point Estimate",
+     main = "Global Frequencies of Change point Timing Estimates", cex.main = 2,
+     cex.axis = 1.5, cex.lab = 1.5)
+dev.off()
+
 mat_bpt <- matrix(NA, nrow = 4320, ncol = 2160)
 for(i in 1:nrow(slopes_df)){
   mat_bpt[slopes_df[i,"row"], slopes_df[i,"col"]] <- slopes_df[i,"changetype_int"]
@@ -28,8 +36,8 @@ library(sp)
 library(raster)
 
 PROJ <- "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
-sp <- st_as_stars(raster(matrix(1, nrow = 2160, ncol = 4320), xmn=-180, xmx=180, ymn=-90, ymx=90, 
-                         crs = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))  
+sp <- st_as_stars(raster(matrix(1, nrow = 2160, ncol = 4320), xmn=-180, xmx=180, ymn=-90, ymx=90,
+                         crs = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 
 sp_typ <- transmute(sp, cluster = as.vector(mat_bpt))
 plot(sp_typ)
@@ -57,7 +65,7 @@ lons <- seq(-180, 180, by = 30)
 lats <- seq(-60, 90, by = 15)
 #*****************************
 
-# WITHOUT majority vote 
+# WITHOUT majority vote
 #***************************************************************************
 
 # colors for change type maps and graphs:
@@ -108,7 +116,7 @@ get_types <- function(i,mat,types){
   mat[mat != -10] <- 0
   mat <- dplyr::na_if(mat, 0)
   mat[!is.na(mat)] <- TRUE
-  
+
   l <- types*mat
   l <- as.vector(l)
   l <- l[!is.na(l)]
@@ -208,15 +216,17 @@ nam2 <- c("Continued Greening", "Greening Onset", "Stalled Greening", "Greening 
           "Both Non-Significant")
 
 
-pdf_fn <- "/home/veronika/CPD/MCUSUM/MCUSUM_bp_types_hists.pdf"
+rotate_x <- function(data, labels_vec, rot_angle, tit, corls) {
+  plt <- barplot(data, ylab = "% of pixels", xaxt="n", main = tit, col = corls, cex.lab = 1.2, cex.main = 1.7)
+  text(plt, par("usr")[3], labels = labels_vec, srt = rot_angle, adj = c(1.1,1.1), xpd = TRUE)#, cex=0.9)
+}
+
+
+pdf_fn <- "MCUSUM_bp_types_hists.pdf"
 pdf(pdf_fn, height=11, width=12)
 par(mfrow = c(2,1))
-barplot(height = frac, names = nam, xlab = "Change Point Types", ylab = "% of pixels", cex.names = 0.7,
-        main = "Change Point Types without Cluster Majority Vote",
-        col = crls)
-barplot(height = frac2, names = nam2, xlab = "Change Point Types", ylab = "% of pixels", cex.names = 0.7,
-        main = "Change Point Types with Cluster Majority Vote",
-        col = crls2)
+rotate_x(frac, nam, 30, "Change Point Types without Cluster Majority Vote",corls = crls)
+rotate_x(frac2, nam2, 30, "Change Point Types with Cluster Majority Vote",corls = crls2)
 dev.off()
 
 

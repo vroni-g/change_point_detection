@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Master Thesis: "Correcting for Multiple Testing in Change Point Detection 
+# Master Thesis: "Correcting for Multiple Testing in Change Point Detection
 #  of Global Vegetation Trends"
 #*******************************************************************************
 # Veronika Grupp, M.Sc. Geoinformatics and Remote Sensing, FSU Jena, 2021
@@ -35,6 +35,7 @@ sum(inds_over)/nrow(sig_df)
 sig_df$MK_sig <- inds_over
 
 saveRDS(sig_df, "master_thesis/results/sig_mq_df.rds")
+sig_df <- readRDS("master_thesis/results/sig_mq_df.rds")
 
 # BARPLOTS
 #*************************************************************************
@@ -66,15 +67,16 @@ type_order2 <- c("green_green", "non_green", "green_non", "green_brown", "brown_
 freq2 <- lapply(type_order2, function(x) dplyr::filter(types_MK_non, changetype == x)[[2]]) %>% unlist
 
 
-pdf_fn <- "/home/veronika/CPD/MCUSUM/MCUSUM_bp_types_MK_overlay.pdf"
+rotate_x <- function(data, labels_vec, rot_angle, tit, corls) {
+  plt <- barplot(data, ylab = "Count of pixels", xaxt="n", main = tit, col = corls, cex.lab = 1.2, cex.main = 1.7)
+  text(plt, par("usr")[3], labels = labels_vec, srt = rot_angle, adj = c(1.1,1.1), xpd = TRUE)#, cex=0.9)
+}
+
+pdf_fn <- "MCUSUM_bp_types_MK_overlay.pdf"
 pdf(pdf_fn, height=11, width=12)
 par(mfrow = c(2,1))
-barplot(height = freq, names = nam, xlab = "Change Point Types", ylab = "Count of pixels", cex.names = 0.7,
-        main = "Change Point Types of Pixels with significant MK Test",
-        col = crls)
-barplot(height = freq2, names = nam2, xlab = "Change Point Types", ylab = "Count of pixels", cex.names = 0.7,
-        main = "Change Point Types of Pixels with non-significant MK Test",
-        col = crls2)
+rotate_x(frac, nam, 30, "Change Point Types of Pixels with significant MK Test",corls = crls)
+rotate_x(frac2, nam2, 30, "Change Point Types of Pixels with non-significant MK Test",corls = crls2)
 dev.off()
 #*************************************************************************
 
